@@ -4,7 +4,7 @@ const server = express()
 const mongoose = require ("mongoose")
 const listEndpoints = require("express-list-endpoints")
 
-
+console.log(process.env.mongoUri)
 mongoose.connect(process.env.mongoUri, {
     useNewUrlParser: true,
     useCreateIndex: true,
