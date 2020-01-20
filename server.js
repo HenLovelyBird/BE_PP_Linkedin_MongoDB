@@ -3,7 +3,7 @@ const cors = require("cors")
 const server = express()
 const mongoose = require ("mongoose")
 const listEndpoints = require("express-list-endpoints")
-
+const profileRouter = require ("./src/routes/profileRouter")
 
 mongoose.connect(process.env.mongoUri, {
     useNewUrlParser: true,
@@ -21,6 +21,7 @@ server.get("/", async (req, res) => {
     res.send("server is working")
 })
 
+server.use("/profiles", profileRouter)
 
 const port = process.env.PORT || 7001
 
