@@ -43,11 +43,12 @@ const profileSchema = new mongoose.Schema({
     type: String,
     required: false,
     default:
-      "https://magicmousemedia.com/wp-content/uploads/2019/03/blank-profile-picture-973460_1280-1024x1024.png"
+      "https://via.placeholder.com/150"
   },
   username: {
     type: String,
-    required: true
+    required: true,
+    unique:true
   },
   experience: [
     {
