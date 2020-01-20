@@ -1,31 +1,12 @@
-const express = require("express")
+const express = require("express");
+const { Profile } = require("../controllers/index.controller");
 
-const profileRouter = express.Router()
+const profileRouter = express.Router();
 
-const {objectId} = require ("mongodb")
+// As we have a controller folder for scalability the logic should be kept out of here
+// We call only the controller methods
+profileRouter.get("/", Profile.getAll);
 
-const Profiles = require("../../models/profileSchema")
-
-
-
-profileRouter.get("/", async (req,res)=>{
-    const profiles = await Profiles.find()
-
-    res.send(profiles)
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+profileRouter.post("/", Profile.create);
 
 module.exports = profileRouter;

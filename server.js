@@ -1,36 +1,31 @@
-const express = require("express")
-const cors = require("cors")
-const server = express()
-const mongoose = require ("mongoose")
-const listEndpoints = require("express-list-endpoints")
-const profileRouter = require ("./src/routes/profileRouter")
-const experienceSchema = require("./models/experienceSchema")
-const experienceRouter = require("./src/routes/experienceRouter")
+// Server should contain only server initializations as it is an index
+// Less is modified is better
+// We put here all which need to be init with the server
+// Routes, models or else not related is called by an index and no here
+// In this way we i prove scalability
+const config = require("./src/config/config");
+const express = require("express");
+const cors = require("cors");
+const server = express();
+const listEndpoints = require("express-list-endpoints");
+// Logger API calls in console
+const morgan = require("morgan");
 
+const port = config.server.port || 7001;
 
-mongoose.connect(process.env.mongoUri, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-  })
-  .then(db => console.log("MongoDB Connected"))
-  .catch(err => console.log("ERROR connecting to MongoDb", err));
- 
+server.use(express.json());
+server.use(cors());
 
-server.use(express.json())
-server.use(cors())
-server.use("/experiences", experienceRouter)
+server.use(morgan("dev"));
+
+server.use(require("./src/routes/index.routes"));
+
 server.get("/", async (req, res) => {
-    res.send("server is working")
-})
-
-server.use("/profiles", profileRouter)
-
-const port = process.env.PORT || 7001
+    res.send("server is working");
+  });
 
 console.log(listEndpoints(server));
 
 server.listen(port, () => {
-    console.log(`Your server is running on port ${port}`)
-})
+  console.log(`Your server is running on port ${port}`);
+});
