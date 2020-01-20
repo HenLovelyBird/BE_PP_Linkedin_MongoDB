@@ -3,7 +3,8 @@ const cors = require("cors")
 const server = express()
 const mongoose = require ("mongoose")
 const listEndpoints = require("express-list-endpoints")
-
+const experienceSchema = require("./models/experienceSchema")
+const experienceRouter = require("./src/routes/experienceRouter")
 
 mongoose.connect(process.env.mongoUri, {
     useNewUrlParser: true,
@@ -17,6 +18,7 @@ mongoose.connect(process.env.mongoUri, {
 
 server.use(express.json())
 server.use(cors())
+server.use("/experiences", experienceRouter)
 server.get("/", async (req, res) => {
     res.send("server is working")
 })
