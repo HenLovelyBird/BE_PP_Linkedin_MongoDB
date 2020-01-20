@@ -1,7 +1,6 @@
 // Profile Schema model
 // Embedded we have the Experience as []
 const mongoose = require("mongoose");
-const uuidv4 = require("uuid/v4");
 const { isEmail } = require("validator");
 
 const schema = {
