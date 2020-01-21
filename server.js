@@ -10,6 +10,8 @@ const server = express();
 const listEndpoints = require("express-list-endpoints");
 // Logger API calls in console
 const morgan = require("morgan");
+const db = require("./src/db/dbConnect")
+const routes = require("./src/routes/index.routes")
 
 const port = config.server.port || 7001;
 
@@ -18,7 +20,7 @@ server.use(cors());
 
 server.use(morgan("dev"));
 
-server.use(require("./src/routes/index.routes"));
+server.use(routes);
 
 server.get("/", async (req, res) => {
     res.send("server is working");
