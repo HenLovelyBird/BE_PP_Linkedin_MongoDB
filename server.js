@@ -5,6 +5,8 @@
 // In this way we i prove scalability
 const config = require("./src/config/config");
 const express = require("express");
+// const mongoose= require("mongoose")
+const mongoose = require("./src/db/dbConnect")
 const cors = require("cors");
 const server = express();
 const listEndpoints = require("express-list-endpoints");
@@ -13,7 +15,27 @@ const morgan = require("morgan");
 const db = require("./src/db/dbConnect")
 const routes = require("./src/routes/index.routes")
 
+const profileRoute = require("./src/routes/profileRouter")
+
 const port = config.server.port || 7001;
+/**
+ * Mongoose Start
+ * 
+ * mongoose
+  .connect(process.env.DB_URI, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false
+  })
+  .then(db => console.log("MongoDB Connected"))
+  .catch(err => console.log("ERROR connecting to MongoDb", err));
+
+ */
+
+/**
+ * Mongoose End
+ */
 
 server.use(express.json());
 server.use(cors());
@@ -21,6 +43,8 @@ server.use(cors());
 server.use(morgan("dev"));
 
 server.use(routes);
+
+server.use("/profiles", profileRoute)
 
 server.get("/", async (req, res) => {
     res.send("server is working");

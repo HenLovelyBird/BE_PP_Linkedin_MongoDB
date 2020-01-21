@@ -3,7 +3,57 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 
-const schema = {
+
+const experienceSchema = new mongoose.Schema({
+    
+        title: {
+            type: String,
+            required: true
+        },
+        role: {
+            type: String,
+            required: true
+        },
+        company: {
+            type: String,
+            required: true
+        },
+        startDate: {
+            type: Date,
+            required: true
+        },
+        endDate: {
+            type: Date
+        },
+        description: {
+            type: String
+        },
+        area: {
+            type: String
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+            required: false
+        },
+
+        updatedAt: {
+            type: Date,
+            default: Date.now,
+            required: false
+        },
+
+        image: {
+            type: String,
+            required: false,
+            default: "https://via.placeholder.com/150"
+        }
+   
+})
+
+
+
+const profileSchema = new mongoose.Schema({
 
     firstname: {
         type: String,
@@ -55,50 +105,7 @@ const schema = {
     },
 
     experience: [
-        {
-            title: {
-                type: String,
-                required: true
-            },
-            role: {
-                type: String,
-                required: true
-            },
-            company: {
-                type: String,
-                required: true
-            },
-            startDate: {
-                type: Date,
-                required: true
-            },
-            endDate: {
-                type: Date
-            },
-            description: {
-                type: String
-            },
-            area: {
-                type: String
-            },
-            createdAt: {
-                type: Date,
-                default: Date.now,
-                required: false
-            },
-
-            updatedAt: {
-                type: Date,
-                default: Date.now,
-                required: false
-            },
-
-            image: {
-                type: String,
-                required: false,
-                default: "https://via.placeholder.com/150"
-            }
-        }
+        experienceSchema
     ],
 
     createdAt: {
@@ -112,10 +119,9 @@ const schema = {
         default: Date.now,
         required: false
     }
-};
+});
 
-const collectionName = "profile";
-const profileSchema = mongoose.Schema(schema);
+const collectionName = "profiles";
 const Profile = mongoose.model(collectionName, profileSchema);
 
 module.exports = Profile;
