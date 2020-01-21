@@ -28,3 +28,5 @@ module.exports = {
         res.send(profileByPost);
     }
 }
+
+module.exports = PostController;

@@ -1,15 +1,33 @@
 const mongoose  = require('mongoose');
-const PostSchema = new mongoose.Schema({
+const schema = {
     text:{
         type:String,
-        required: '{PATH} is required!'
+        required: true
     },
     username :{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Profile'
-    }
-},{
-    timestamps:true
-})
+    },
+    image: {
+        type: String,
+        required: false,
+        default: "https://via.placeholder.com/150"
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    },
 
-module.exports = mongoose.model('Post',PostSchema);
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    }
+}
+
+const collectionName = "posts";
+const postSchema = mongoose.Schema(schema);
+const Post = mongoose.model(collectionName, postSchema);
+
+module.exports = Post;
