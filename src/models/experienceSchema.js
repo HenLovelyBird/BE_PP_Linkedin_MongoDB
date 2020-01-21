@@ -32,15 +32,38 @@ const ExperienceSchema = mongoose.Schema({
     image: {
         type: String,
         required: false,
-       //default: server ??
     }
-    // timestamps: true { 
-    //     createdAt: 'createdAt', 
-    //     updatedAt: 'updatedAt'
-    // }
-});
+ 
+    
+}, { timestamps: true });
 
+// Nesting example:
+// const BookSchema = new Schema({
+//     title: String,
+//     author: String,
+//     year: String,
+//     genre: Array,
+//     description: String,
+//     price: Number,
+//     quantity: Number
+// });
+// const UserSchema = new Schema({
+//     name: {
+//         type: String,
+//     },
+//     email: {
+//         type: String,
+//     },
+//     surname: String,
+//     age: {
+//         type: Number,
+//     },
+//     username: String,
+//     cart: [BookSchema]
+// });
     
 
 
 const experiencescollection = mongoose.model("experience", ExperienceSchema);
+
+module.exports = experiencescollection;

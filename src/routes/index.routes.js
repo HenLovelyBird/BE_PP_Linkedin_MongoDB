@@ -4,11 +4,12 @@ const { server } = require("../config/config");
 const express = require("express");
 // Routes lib
 const router = express.Router();
+const profileRouter = require("./profileRouter")
 
 // Defining the Index Routers
-router.use(server.url + "profiles", require("./profileRouter"));
-// router.use(server.url + "experiences", require("./experiences"));
-// router.use(server.url + "posts", require("./posts"));
+// router.use(server.url + "profiles", profileRouter);
+router.use("/experiences", require("./experienceRouter"));
+// router.use(server.url + "posts", require("./postRouter"));
 
 // Exporting the Index Router
 module.exports = router;
