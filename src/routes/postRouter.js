@@ -25,6 +25,21 @@ postRouter.get("/", async (req, res) => {
     }
 });
 
+postRouter.get("/:id", async (req, res) => {
+    try {
+        const post = await Posts.findById(req.params.id);
+        if (!post)
+            res.status(404).send({
+                message: "Post was not found",
+                req: req.params.id
+            });
+
+        res.send(post);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
+
 postRouter.post("/", async (req, res) => {
     try {
         const { username } = req.body;
@@ -32,7 +47,7 @@ postRouter.post("/", async (req, res) => {
         const profile = await Profiles.findOne({ username });
 
         if (!profile) {
-            return res.status(400).send({"Message": "Username not found"});
+            return res.status(400).send({ Message: "Username not found" });
         }
 
         let newPost = await Posts.create(req.body);
@@ -46,8 +61,8 @@ postRouter.post("/", async (req, res) => {
 
 //POST .../api/posts/{postId}
 postRouter.post(
-    "/uploadImg/:id",
-    multerConfig.single("postImg"),
+    "/:id/uploadImg",
+    multerConfig.single("image"),
     async (req, res) => {
         try {
             const fileName =
@@ -68,34 +83,21 @@ postRouter.post(
                 "/images/posts/" +
                 fileName;
 
-            await Posts.findOneAndUpdate(
+            const newPostImg = await Posts.findOneAndUpdate(
                 { _id: req.params.id },
                 {
                     $set: { image: req.body.image }
                 }
-            ).save();
+            );
+
+            newPostImg.save();
 
             res.send("Image URL updated");
         } catch (ex) {
-            res.status(500).send(ex);
+            res.status(500).send({ Message: "Internal server error", err: ex });
         }
     }
 );
-
-postRouter.get("/:id", async (req, res) => {
-    try {
-        const post = await Posts.findById(req.params.id);
-        if (!post)
-            res.status(404).send({
-                message: "Post was not found",
-                req: req.params.id
-            });
-
-        res.send(post);
-    } catch (error) {
-        res.status(500).send(error);
-    }
-});
 
 postRouter.delete("/:id", async (req, res) => {
     try {

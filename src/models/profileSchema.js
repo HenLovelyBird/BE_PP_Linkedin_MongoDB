@@ -3,58 +3,52 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 
-
 const experienceSchema = new mongoose.Schema({
-    
-        title: {
-            type: String,
-            required: true
-        },
-        role: {
-            type: String,
-            required: true
-        },
-        company: {
-            type: String,
-            required: true
-        },
-        startDate: {
-            type: Date,
-            required: true
-        },
-        endDate: {
-            type: Date
-        },
-        description: {
-            type: String
-        },
-        area: {
-            type: String
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now,
-            required: false
-        },
+    title: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String,
+        required: true
+    },
+    company: {
+        type: String,
+        required: true
+    },
+    startDate: {
+        type: Date,
+        required: true
+    },
+    endDate: {
+        type: Date
+    },
+    description: {
+        type: String
+    },
+    area: {
+        type: String
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    },
 
-        updatedAt: {
-            type: Date,
-            default: Date.now,
-            required: false
-        },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    },
 
-        image: {
-            type: String,
-            required: false,
-            default: "https://via.placeholder.com/150"
-        }
-   
-})
-
-
+    image: {
+        type: String,
+        required: false,
+        default: "https://via.placeholder.com/150"
+    }
+});
 
 const profileSchema = new mongoose.Schema({
-
     firstname: {
         type: String,
         required: true
@@ -104,9 +98,7 @@ const profileSchema = new mongoose.Schema({
         unique: true
     },
 
-    experience: [
-        experienceSchema
-    ],
+    experience: [experienceSchema],
 
     createdAt: {
         type: Date,
