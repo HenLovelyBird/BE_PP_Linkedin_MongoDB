@@ -17,16 +17,16 @@ const experienceSchema = new mongoose.Schema({
         required: true
     },
     endDate: {
-        type: Date
+        type: Date,
         required: false
     },
     description: {
-        type: String
+        type: String,
         required: false
     },
-  
+
     area: {
-        type: String
+        type: String,
         required: true
     },
     createdAt: {
@@ -40,7 +40,7 @@ const experienceSchema = new mongoose.Schema({
         default: Date.now,
         required: false
     },
-  
+
     username: {
         type: String,
         required: false
@@ -49,10 +49,8 @@ const experienceSchema = new mongoose.Schema({
         type: String,
         required: false,
         default: "https://via.placeholder.com/150"
-    } 
-    
+    }
 });
-
 
 const profileSchema = new mongoose.Schema({
     firstname: {
@@ -117,12 +115,9 @@ const profileSchema = new mongoose.Schema({
         default: Date.now,
         required: false
     }
-
 });
-
 
 const collectionName = "profiles";
 const Profile = mongoose.model(collectionName, profileSchema);
 
 module.exports = Profile;
-
