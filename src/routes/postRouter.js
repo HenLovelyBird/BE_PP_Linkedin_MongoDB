@@ -13,7 +13,7 @@ postRouter.get("/", async(req, res) => {
     res.send(posts)  
 });
 
-postRouter.post("/:id", async (req, res) => {
+postRouter.post("/", async (req, res) => {
     try {
         const newPost = await Posts.create(req.body);
         console.log(req.body);
