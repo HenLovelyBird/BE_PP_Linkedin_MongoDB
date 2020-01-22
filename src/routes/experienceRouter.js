@@ -1,9 +1,9 @@
-const express = require("express")
+const express = require("express");
 // const fs = require("fs-extra")
-const {check} = require('express-validator')
+const { check } = require("express-validator");
 // const multer = require("multer")
 // const multerConfig = multer()
-const Profiles = require("../models/profileSchema")
+const Profiles = require("../models/profileSchema");
 
 const experienceRouter = express.Router();
 
@@ -15,24 +15,39 @@ const experienceRouter = express.Router();
 // - GET https://striveschool.herokuapp.com/api/profile/userName/experiences
 // Get user experiences
 // experienceRouter.get("/:username", async(req, res) => {
-//      const experiences = await Profiles.findOne({"username": req.params.username});  
-//      res.send(experiences)  
+//      const experiences = await Profiles.findOne({"username": req.params.username});
+//      res.send(experiences)
 // });
 
-experienceRouter.get("/:user/experiences", async (req, res) => {
+// experienceRouter.get("/:user/experiences", async (req, res) => {
+//     try {
+//         const profile = await Profiles.findOne({ username: req.params.user });
+//         if (profile) {
+//             res.send(profile);
+//         } else {
+//             res.status(404).send("Cannot find the profile with the id");
+//         }
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).send(error);
+//     }
+// });
+
+experienceRouter.get("/:username", async (req, res) => {
+    console.log(req.params.username);
     try {
-        const profile = await Profiles.findOne({username: req.params.user});
-        if (profile) {
-            res.send(profile);
-        } else {
-            res.status(404).send("Cannot find the profile with the id");
-        }
+        const experiences = await Profiles.findOne(
+            { username: req.params.username },
+            { experience: 1, username: 1, _id: 0 }
+        ).lean();
+
+        if (experiences) res.send(experiences);
+
+        res.status(404).send({ Message: "Not found any experience" });
     } catch (error) {
-        console.log(error);
-        res.status(500).send(error);
+        res.status(500).send(err);
     }
 });
-
 
 // - GET https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
@@ -60,7 +75,7 @@ experienceRouter.get("/:user/experiences", async (req, res) => {
 
 
 // - POST https://striveschool.herokuapp.com/api/profile/userName/experiences
-// Create an experience. 
+// Create an experience.
 // experienceRouter.post("/", async(req, res) => {
 //     try{
 //         const newExperience = await Experience.create(req.body)
@@ -72,19 +87,20 @@ experienceRouter.get("/:user/experiences", async (req, res) => {
 // })
 
 // POST
-experienceRouter.post("/user/:username/", async (req,res)=>{
+experienceRouter.post("/user/:username/", async (req, res) => {
     try {
         const newExperience = req.body;
-        const addProfileExperience = await Profiles.findOneAndUpdate({username: req.params.username},
- {
-   $push: {experience: newExperience}
- }
-);
- console.log(addProfileExperience)
-res.send(addProfileExperience)
+        const addProfileExperience = await Profiles.findOneAndUpdate(
+            { username: req.params.username },
+            {
+                $push: { experience: newExperience }
+            }
+        );
+        console.log(addProfileExperience);
+        res.send(addProfileExperience);
     } catch (error) {
-        res.status(500).send(error)
-        console.log(error)
+        res.status(500).send(error);
+        console.log(error);
     }
 });
 
@@ -103,19 +119,29 @@ res.send(addProfileExperience)
 
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.put("/username/:expId", async(req, res) => {
+experienceRouter.put("/user/:username/:expId", async (req, res) => {
     try {
-        const experience = Profiles.findByIdAndUpdate(
-            {expId: req.params.expId },
-            {$set: {...req.body}}
-        );
-        if (experience) {
-            res.send(experience)
-        }
-    } catch(err) {
-        res.status(404).send(err)
+        // const experienceToEdit = await Profiles.findOne(
+        //     { "experience._id": req.params.expId },
+        //     { _id: 0, "experience.$": 1 },
+        //     { $set: { ...req.body } }
+        // );
+
+        const experienceToEdit = await Profiles.findOneAndUpdate(
+            {
+                username: req.params.username,
+            },
+            { "experience.$": 1, username: 1, _id: 0 },
+            { $set: { ...req.body } }
+        ).lean();
+
+        if (experienceToEdit)
+            res.send({ Message: "Update", experience: req.body });
+        res.status(404).send("Not found");
+    } catch (err) {
+        res.status(404).send(err);
     }
-})
+});
 
 
 /**
@@ -146,20 +172,20 @@ experienceRouter.put("/username/:expId", async(req, res) => {
 
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.delete("username/:expId", async(req, res) => {
+experienceRouter.delete("username/:expId", async (req, res) => {
     try {
-        const experience = Profiles.findByIdAndDelete(req.params.expId)
-        res.send(experience)
+        const experience = Profiles.findByIdAndDelete(req.params.expId);
+        res.send(experience);
     } catch (error) {
-        res.status(404).send(error + "check your id")
+        res.status(404).send(error + "check your id");
     }
 });
 
 // - POST https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId/picture
 // Change the experience picture
-// experienceRouter.post("/:expId/img", 
-//     [check("img") 
-//     .isURL() 
+// experienceRouter.post("/:expId/img",
+//     [check("img")
+//     .isURL()
 //     .withMessage("only URL images are permitted")],
 //     async(req, res) => {
 //         const errors = validationResult(req);
@@ -176,5 +202,4 @@ experienceRouter.delete("username/:expId", async(req, res) => {
 
 // })
 
-
-module.exports = experienceRouter
+module.exports = experienceRouter;
