@@ -31,7 +31,7 @@ postRouter.post("/", async (req, res) => {
             username: req.body.username
         });
 
-        if (!username) res.status(400).send("Username not found");
+        if (!username) res.status(400).send({"Message": `Username >${req.body.username} was not found`});
 
         const addedPost = await newPost.save();
         addedPost.populate(username.username);
@@ -46,7 +46,7 @@ postRouter.post("/", async (req, res) => {
 postRouter.get("/:id", async (req, res) => {
     try {
         const post = await Posts.findById(req.params.id);
-        if (post.lenght === 0)
+        if (!post)
             res.status(404).send({
                 message: "Post was not found",
                 req: req.params.id
@@ -56,6 +56,21 @@ postRouter.get("/:id", async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
         console.log(error);
+    }
+});
+
+postRouter.delete("/:id", async (req, res) => {
+    try {
+        const deletedPost = await Posts.findByIdAndDelete(req.params.id);
+
+        if (deletedPost) res.status(200).send({"Message": "Successfully Deleted"});
+
+        res.status(404).send({
+           "Message": `Post with id: ${req.params.id} not found for deletion!`
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
     }
 });
 
