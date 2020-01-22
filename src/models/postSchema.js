@@ -15,7 +15,8 @@ const mongoose = require("mongoose");
 const schema = {
     text: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
 
     username: {

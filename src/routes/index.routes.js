@@ -9,7 +9,7 @@ const profileRouter = require("./profileRouter")
 // Defining the Index Routers
 // router.use(server.url + "profiles", profileRouter);
 router.use("/experiences", require("./experienceRouter"));
-// router.use(server.url + "posts", require("./postRouter"));
+router.use("/posts", require("./postRouter"));
 
 // Exporting the Index Router
 module.exports = router;
