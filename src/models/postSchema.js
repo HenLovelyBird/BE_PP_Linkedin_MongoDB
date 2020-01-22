@@ -5,12 +5,11 @@ const schema = {
         required: true
     },
     username :{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Profile'
+        type:String,
+        required: true
     },
     image: {
         type: String,
-        required: false,
         default: "https://via.placeholder.com/150"
     },
     createdAt: {

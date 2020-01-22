@@ -16,6 +16,7 @@ const db = require("./src/db/dbConnect")
 const routes = require("./src/routes/index.routes")
 
 const profileRoute = require("./src/routes/profileRouter")
+const postRoute = require("./src/routes/postRouter")
 
 const port = config.server.port || 7001;
 /**
@@ -45,6 +46,7 @@ server.use(morgan("dev"));
 server.use(routes);
 
 server.use("/profiles", profileRoute)
+server.use("/posts", postRoute)
 
 server.get("/", async (req, res) => {
     res.send("server is working");

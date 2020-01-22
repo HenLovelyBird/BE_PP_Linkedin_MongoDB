@@ -9,6 +9,6 @@ module.exports = {
     },
     // DB Setup
     db: {
-        uri: process.env.DB_URI
+        uri: process.env.mongoUri
     }
 };
