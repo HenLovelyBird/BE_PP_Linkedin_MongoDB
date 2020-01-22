@@ -3,8 +3,10 @@ const express = require("express");
 const Posts = require("../models/postSchema");
 const Profiles = require("../models/profileSchema");
 const multer = require("multer");
+const multerConfig = multer({});
 const path = require("path");
 const fs = require("fs-extra");
+
 const postRouter = express.Router();
 
 postRouter.get("/", async (req, res) => {
@@ -25,23 +27,60 @@ postRouter.get("/", async (req, res) => {
 
 postRouter.post("/", async (req, res) => {
     try {
-        const newPost = await Posts.create(req.body);
+        const { username } = req.body;
 
-        const username = await Profiles.findOne({
-            username: req.body.username
-        });
+        const profile = await Profiles.findOne({ username });
 
-        if (!username) res.status(400).send({"Message": `Username >${req.body.username} was not found`});
+        if (!profile) {
+            return res.status(400).send({"Message": "Username not found"});
+        }
 
-        const addedPost = await newPost.save();
-        addedPost.populate(username.username);
+        let newPost = await Posts.create(req.body);
+        newPost.username = username;
 
         res.send({ success: "Post added", newPost });
     } catch (error) {
         res.status(500).send(error);
-        console.log(error);
     }
 });
+
+//POST .../api/posts/{postId}
+postRouter.post(
+    "/uploadImg/:id",
+    multerConfig.single("postImg"),
+    async (req, res) => {
+        try {
+            const fileName =
+                req.params.id + path.extname(req.file.originalname);
+
+            const newImageLocation = path.join(
+                __dirname,
+                "../../images/posts",
+                fileName
+            );
+
+            await fs.writeFile(newImageLocation, req.file.buffer);
+
+            req.body.image =
+                req.protocol +
+                "://" +
+                req.get("host") +
+                "/images/posts/" +
+                fileName;
+
+            await Posts.findOneAndUpdate(
+                { _id: req.params.id },
+                {
+                    $set: { image: req.body.image }
+                }
+            ).save();
+
+            res.send("Image URL updated");
+        } catch (ex) {
+            res.status(500).send(ex);
+        }
+    }
+);
 
 postRouter.get("/:id", async (req, res) => {
     try {
@@ -55,7 +94,6 @@ postRouter.get("/:id", async (req, res) => {
         res.send(post);
     } catch (error) {
         res.status(500).send(error);
-        console.log(error);
     }
 });
 
@@ -63,10 +101,11 @@ postRouter.delete("/:id", async (req, res) => {
     try {
         const deletedPost = await Posts.findByIdAndDelete(req.params.id);
 
-        if (deletedPost) res.status(200).send({"Message": "Successfully Deleted"});
+        if (deletedPost)
+            res.status(200).send({ Message: "Successfully Deleted" });
 
         res.status(404).send({
-           "Message": `Post with id: ${req.params.id} not found for deletion!`
+            Message: `Post with id: ${req.params.id} not found for deletion!`
         });
     } catch (error) {
         console.log(error);
