@@ -4,10 +4,6 @@ const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 
 const experienceSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
     role: {
         type: String,
         required: true
@@ -22,12 +18,16 @@ const experienceSchema = new mongoose.Schema({
     },
     endDate: {
         type: Date
+        required: false
     },
     description: {
         type: String
+        required: false
     },
+  
     area: {
         type: String
+        required: true
     },
     createdAt: {
         type: Date,
@@ -40,13 +40,19 @@ const experienceSchema = new mongoose.Schema({
         default: Date.now,
         required: false
     },
-
+  
+    username: {
+        type: String,
+        required: false
+    },
     image: {
         type: String,
         required: false,
         default: "https://via.placeholder.com/150"
-    }
+    } 
+    
 });
+
 
 const profileSchema = new mongoose.Schema({
     firstname: {
@@ -111,22 +117,12 @@ const profileSchema = new mongoose.Schema({
         default: Date.now,
         required: false
     }
+
 });
+
 
 const collectionName = "profiles";
 const Profile = mongoose.model(collectionName, profileSchema);
 
 module.exports = Profile;
-// {
-//     "_id": "5d84937322b7b54d848eb41b", //server generated
-//     "name": "Diego",
-//     "surname": "Banovaz",
-//     "email": "diego@strive.school",
-//     "bio": "SW ENG",
-//     "title": "COO @ Strive School",
-//     "area": "Berlin",
-//     "image": ..., //server generated on upload, set a default here
-//     "username": "admin",
-//     "createdAt": "2019-09-20T08:53:07.094Z", //server generated
-//     "updatedAt": "2019-09-20T09:00:46.977Z", //server generated
-// }
+
