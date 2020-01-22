@@ -1,16 +1,32 @@
-const mongoose  = require('mongoose');
+/**
+   {
+        "_id": "5d93ac84b86e220017e76ae1", //server generated
+        "text": "this is a text 12312 1 3 1",  <<--- THIS IS THE ONLY ONE YOU'LL BE SENDING!!!
+        "username": "admin",
+        "createdAt": "2019-10-01T19:44:04.496Z", //server generated
+        "updatedAt": "2019-10-01T19:44:04.496Z", //server generated
+        "image": ... //server generated on upload, set a default here
+    }
+​
+ */
+
+const mongoose = require("mongoose");
+
 const schema = {
-    text:{
-        type:String,
+    text: {
+        type: String,
         required: true
     },
-    username :{
-        type:String,
-        required: true
+
+    username: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Profile"
     },
+
     image: {
         type: String,
-        default: "https://via.placeholder.com/150"
+        default: "https://via.placeholder.com/150",
+        required: false
     },
     createdAt: {
         type: Date,
@@ -23,7 +39,7 @@ const schema = {
         default: Date.now,
         required: false
     }
-}
+};
 
 const collectionName = "posts";
 const postSchema = mongoose.Schema(schema);
