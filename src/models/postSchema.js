@@ -1,19 +1,39 @@
-const mongoose  = require('mongoose');
+
+
+const mongoose = require("mongoose");
+
 const schema = ({
-    text:{
-        type:String,
+    text: {
+        type: String,
+        required: true,
+        unique: true
+    },
+
+    username: {
+        type: mongoose.Schema.Types.String,
+        ref: "Profile",
         required: true
     },
-    username :{
-        type:String,
-        required: true
-    },
+
     image: {
         type: String,
-        default: "https://via.placeholder.com/150"
-    }
+        default: "https://via.placeholder.com/150",
+        required: false
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    },
 
-}, { timestamps: true });
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    }
+});
+
+
 
 const collectionName = "posts";
 const postSchema = mongoose.Schema(schema);

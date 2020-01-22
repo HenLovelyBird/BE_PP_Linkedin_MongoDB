@@ -3,7 +3,6 @@
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 
-
 const experienceSchema = new mongoose.Schema({
     role: {
         type: String,
@@ -18,29 +17,41 @@ const experienceSchema = new mongoose.Schema({
         required: true
     },
     endDate: {
-        type: Date,
+        type: Date
         required: false
     },
     description: {
-        type: String,
+        type: String
         required: false
     },
+  
     area: {
-        type: String,
+        type: String
         required: true
     },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    },
+
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    },
+  
     username: {
         type: String,
-        required: true
+        required: false
     },
     image: {
         type: String,
         required: false,
         default: "https://via.placeholder.com/150"
-    }
- 
+    } 
     
-}, { timestamps: true });
+});
 
 
 const profileSchema = new mongoose.Schema({
@@ -93,11 +104,22 @@ const profileSchema = new mongoose.Schema({
         unique: true
     },
 
-    experience: [
-        experienceSchema
-    ]
-    
-}, { timestamps: true });
+    experience: [experienceSchema],
+
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    },
+
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+        required: false
+    }
+
+});
+
 
 const collectionName = "profiles";
 const Profile = mongoose.model(collectionName, profileSchema);
