@@ -74,30 +74,35 @@ res.send(addProfileExperience)
     }
 });
 
+
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.put("/username/:expId", async(req, res) => {
+experienceRouter.put("/:expId", async (req, res) => {
     try {
-        const experience = Profiles.findByIdAndUpdate(
-            {expId: req.params.expId },
-            {$set: {...req.body}}
+        const experienceToEdit = await Profiles.findOne(
+            { "experience._id": req.params.expId },
+            { _id: 0, "experience.$": 1 },
+            { $set: { ...req.body } }
         );
-        if (experience) {
-            res.send(experience)
-        }
-    } catch(err) {
-        res.status(404).send(err)
+        if (experienceToEdit)
+            res.send({ Message: "Update", experience: req.body });
+        res.status(404).send("Not found");
+    } catch (err) {
+        res.status(404).send(err);
     }
-})
+});
+
 
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.delete("username/:expId", async(req, res) => {
+experienceRouter.delete("/:expId", async(req, res) => {
     try {
-        const experience = Profiles.findByIdAndDelete(req.params.expId)
-        res.send(experience)
+        const experienceToDelete = Profiles.findByIdAndDelete(req.params.expId)
+        res.send(experienceToDelete)
+    if(experienceToDelete)
+        res.send({Message: "Deleted"})
     } catch (error) {
-        res.status(404).send(error + "check your id")
+        res.status(404).send(error)
     }
 });
 
