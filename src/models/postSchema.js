@@ -1,17 +1,24 @@
-const mongoose  = require('mongoose');
-const schema = {
-    text:{
-        type:String,
+
+
+const mongoose = require("mongoose");
+
+const schema = ({
+    text: {
+        type: String,
+        required: true,
+        unique: true
+    },
+
+    username: {
+        type: mongoose.Schema.Types.String,
+        ref: "Profile",
         required: true
     },
-    username :{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Profile'
-    },
+
     image: {
         type: String,
-        required: false,
-        default: "https://via.placeholder.com/150"
+        default: "https://via.placeholder.com/150",
+        required: false
     },
     createdAt: {
         type: Date,
@@ -24,7 +31,9 @@ const schema = {
         default: Date.now,
         required: false
     }
-}
+});
+
+
 
 const collectionName = "posts";
 const postSchema = mongoose.Schema(schema);
