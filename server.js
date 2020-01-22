@@ -16,6 +16,7 @@ const db = require("./src/db/dbConnect")
 const routes = require("./src/routes/index.routes")
 
 const profileRoute = require("./src/routes/profileRouter")
+const experienceRoute = require("./src/routes/experienceRouter")
 const postRoute = require("./src/routes/postRouter")
 
 const port = config.server.port || 7001;
@@ -44,7 +45,7 @@ server.use(cors());
 server.use(morgan("dev"));
 
 server.use(routes);
-
+server.use("/experiences", experienceRoute)
 server.use("/profiles", profileRoute)
 server.use("/posts", postRoute)
 

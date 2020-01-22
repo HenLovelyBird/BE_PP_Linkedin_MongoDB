@@ -1,5 +1,5 @@
 const mongoose  = require('mongoose');
-const schema = {
+const schema = ({
     text:{
         type:String,
         required: true
@@ -11,19 +11,9 @@ const schema = {
     image: {
         type: String,
         default: "https://via.placeholder.com/150"
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-        required: false
-    },
-
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-        required: false
     }
-}
+
+}, { timestamps: true });
 
 const collectionName = "posts";
 const postSchema = mongoose.Schema(schema);

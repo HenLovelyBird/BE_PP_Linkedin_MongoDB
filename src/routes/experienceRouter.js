@@ -3,47 +3,82 @@ const express = require("express")
 const {check} = require('express-validator')
 // const multer = require("multer")
 // const multerConfig = multer()
-const Experience = require("../models/experienceSchema")
+const Profiles = require("../models/profileSchema")
 
 const experienceRouter = express.Router();
 
+// POST, PUT, DELETE :expId
+// experiences/:username
+// how to post experiences into a particular profile username/id?
+// .push(...req.body)
 
 // - GET https://striveschool.herokuapp.com/api/profile/userName/experiences
 // Get user experiences
-experienceRouter.get("/", async(req, res) => {
-    
-     const experiences = await Experience.find({})  
-     res.send(experiences)  
+// experienceRouter.get("/:username", async(req, res) => {
+//      const experiences = await Profiles.findOne({"username": req.params.username});  
+//      res.send(experiences)  
+// });
+
+experienceRouter.get("/:user/experiences", async (req, res) => {
+    try {
+        const profile = await Profiles.findOne({username: req.params.user});
+        if (profile) {
+            res.send(profile);
+        } else {
+            res.status(404).send("Cannot find the profile with the id");
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
 });
+
 
 // - GET https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.get("/:expId", async(req, res) => {
-    const experience = await Experience.findById(req.params.expId);
-    if (experience) {
-        res.send(experience)
-    } else {
-        res.send("Check your Id and try again")
-    }
-})
+// experienceRouter.get("/:expId", async(req, res) => {
+//     const experience = await Experience.findById(req.params.expId);
+//     if (experience) {
+//         res.send(experience)
+//     } else {
+//         res.send("Check your Id and try again")
+//     }
+// })
 
 // - POST https://striveschool.herokuapp.com/api/profile/userName/experiences
 // Create an experience. 
-experienceRouter.post("/", async(req, res) => {
-    try{
-        const newExperience = await Experience.create(req.body)
-        newExperience.save()
-        res.send(newExperience)
-    } catch(err) {
-        res.status(500).send(err)
+// experienceRouter.post("/", async(req, res) => {
+//     try{
+//         const newExperience = await Experience.create(req.body)
+//         newExperience.save()
+//         res.send(newExperience)
+//     } catch(err) {
+//         res.status(500).send(err)
+//     }
+// })
+
+// POST
+experienceRouter.post("/user/:username/", async (req,res)=>{
+    try {
+        const newExperience = req.body;
+        const addProfileExperience = await Profiles.findOneAndUpdate({username: req.params.username},
+ {
+   $push: {experience: newExperience}
+ }
+);
+ console.log(addProfileExperience)
+res.send(addProfileExperience)
+    } catch (error) {
+        res.status(500).send(error)
+        console.log(error)
     }
-})
+});
 
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.put("/:expId", async(req, res) => {
+experienceRouter.put("/username/:expId", async(req, res) => {
     try {
-        const experience = Experience.findByIdAndUpdate(
+        const experience = Profiles.findByIdAndUpdate(
             {expId: req.params.expId },
             {$set: {...req.body}}
         );
@@ -57,9 +92,9 @@ experienceRouter.put("/:expId", async(req, res) => {
 
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.delete("/:expId", async(req, res) => {
+experienceRouter.delete("username/:expId", async(req, res) => {
     try {
-        const experience = Experience.findByIdAndDelete(req.params.expId)
+        const experience = Profiles.findByIdAndDelete(req.params.expId)
         res.send(experience)
     } catch (error) {
         res.status(404).send(error + "check your id")
