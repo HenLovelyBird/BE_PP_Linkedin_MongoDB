@@ -45,6 +45,20 @@ experienceRouter.get("/:user/experiences", async (req, res) => {
 //     }
 // })
 
+//const experience = await Profiles.find({"experience._id": req.params.expId}, {_id: 0, 'experience.$': 1});
+
+
+// <-- OR-->
+// experienceRouter.get("/:username", async (req, res) => {
+//     console.log(req.params.username);
+//     const profile = await Profiles.findOne(
+//         { username: req.params.username },
+//         { experience: 1, _id: 0 }
+//     ).lean();
+//     res.send(profile.experience);
+// });
+
+
 // - POST https://striveschool.herokuapp.com/api/profile/userName/experiences
 // Create an experience. 
 // experienceRouter.post("/", async(req, res) => {
@@ -75,6 +89,21 @@ res.send(addProfileExperience)
 });
 
 
+<<<<<<< HEAD
+=======
+/**
+ * const newProject = req.body;
+ const addProfileExperience = await Profiles.findOneAndUpdate({req.params.username},
+      {
+        $push: { experience: req.body}
+      }
+    );
+ */
+
+
+
+
+>>>>>>> 335a714711dfb407c5f5408eec0b97049445d623
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
 experienceRouter.put("/:expId", async (req, res) => {
@@ -91,6 +120,33 @@ experienceRouter.put("/:expId", async (req, res) => {
         res.status(404).send(err);
     }
 });
+
+
+
+/**
+ * 
+ 
+ delete req.body._id;
+
+  let newInfo = { ...req.body, updatedAt: new Date() };
+
+  let id = { _id: req.params._id };
+  const editStudent = await Profiles.findOneAndUpdate(id, {
+    $set: { experience: newInfo }
+  });
+
+
+  ALTERNATIVELY==>/:id/experience/:expId
+
+   await Profiles.updateOne(
+            {
+              _id: new ObjectId(req.params.id),
+              "experience._id": new ObjectId(req.params.expId)
+            },
+            { "experience.$": req.body }
+          );
+
+ */
 
 
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId

@@ -12,8 +12,10 @@ const server = express();
 const listEndpoints = require("express-list-endpoints");
 // Logger API calls in console
 const morgan = require("morgan");
-const db = require("./src/db/dbConnect");
-const routes = require("./src/routes/index.routes");
+
+const path = require("path")
+const db = require("./src/db/dbConnect")
+const routes = require("./src/routes/index.routes")
 
 
 const profileRoute = require("./src/routes/profileRouter")
@@ -26,6 +28,8 @@ const port = config.server.port || 7001;
 server.use(express.json());
 server.use(express.static("./images"));
 server.use(cors());
+
+server.use("/images", express.static(path.join(__dirname, "images")))
 
 server.use(morgan("dev"));
 
