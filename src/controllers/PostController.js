@@ -1,32 +1,30 @@
-const Post = require('../../models/postShema');
-const Profile = require('../../models/profileShema');
+const Post = require('../models/postSchema');
 
-module.exports = {
-    create : async (req, res) => {
-
-        console.log(req.params);
-        profile = req.params;
-        id = profile.id;
-        const { text, username} = req.body;
-        const post = await Post.create({
-            text,
-            username,
-            profile:id
-        });
-        await post.save();
-
-        const profileById = await Profile.findById(id);
-
-        profileById.posts.push(post);
-        await profileById.save();
-
-        return res.send(profileById);
+const PostController = {
+    async getAll(req, res) {
+        await Post.find({})
+            .then(posts => res.json(posts))
+            .catch(err => res.json(err));
     },
-    userByPost : async (req,res)=>{
-        const { id } = req.params;
-        const profileByPost = await Post.findById(id).populate('profile');
-        res.send(profileByPost);
+
+    async create(req, res) {
+        console.log(req.body);
+        const newPost = new Post(req.body);
+        await newPost
+            .save()
+            .then(() =>
+                res.json({
+                    message: "New post added",
+                    data: req.body
+                })
+            )
+            .catch(err =>
+                res.status(400).json({
+                    Msg: "Creation of a new post failed",
+                    Error: err
+                })
+            );
     }
-}
+};
 
 module.exports = PostController;
