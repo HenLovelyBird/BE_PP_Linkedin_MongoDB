@@ -1,6 +1,7 @@
 const express = require("express");
 
 const Posts = require("../models/postSchema");
+const Profiles = require("../models/profileSchema");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs-extra");
@@ -26,11 +27,32 @@ postRouter.post("/", async (req, res) => {
     try {
         const newPost = await Posts.create(req.body);
 
-        newPost.save(() => {
-                newPost.populate("username");
+        const username = await Profiles.findOne({
+            username: req.body.username
         });
 
+        if (!username) res.status(400).send("Username not found");
+
+        const addedPost = await newPost.save();
+        addedPost.populate(username.username);
+
         res.send({ success: "Post added", newPost });
+    } catch (error) {
+        res.status(500).send(error);
+        console.log(error);
+    }
+});
+
+postRouter.get("/:id", async (req, res) => {
+    try {
+        const post = await Posts.findById(req.params.id);
+        if (post.lenght === 0)
+            res.status(404).send({
+                message: "Post was not found",
+                req: req.params.id
+            });
+
+        res.send(post);
     } catch (error) {
         res.status(500).send(error);
         console.log(error);

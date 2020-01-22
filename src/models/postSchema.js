@@ -20,8 +20,9 @@ const schema = {
     },
 
     username: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Profile"
+        type: mongoose.Schema.Types.String,
+        ref: "Profile",
+        required: true
     },
 
     image: {
