@@ -99,6 +99,25 @@ postRouter.post(
     }
 );
 
+postRouter.put("/:id", async (req, res) => {
+    try {
+        const postToEdit = await Posts.findByIdAndUpdate(req.params.id, {
+            $set: {
+                ...req.body,
+                updatedAt: new Date()
+            }
+        });
+
+        if (postToEdit)
+            res.status(200).send({ Message: "Updated!", post: req.body });
+
+        res.status(404).send(`Post with id: ${req.params.id} is not found !`);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+});
+
 postRouter.delete("/:id", async (req, res) => {
     try {
         const deletedPost = await Posts.findByIdAndDelete(req.params.id);
