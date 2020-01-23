@@ -1,16 +1,9 @@
 const express = require("express");
-// const fs = require("fs-extra")
 const { check } = require("express-validator");
-// const multer = require("multer")
-// const multerConfig = multer()
 const Profiles = require("../models/profileSchema");
 
 const experienceRouter = express.Router();
 
-// POST, PUT, DELETE :expId
-// experiences/:username
-// how to post experiences into a particular profile username/id?
-// .push(...req.body)
 
 // - GET https://striveschool.herokuapp.com/api/profile/userName/experiences
 // Get user experiences
@@ -105,6 +98,7 @@ experienceRouter.post("/user/:username/", async (req, res) => {
 });
 
 
+<<<<<<< HEAD
 
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
@@ -115,6 +109,17 @@ experienceRouter.put("/:expId", async (req, res) => {
             { _id: 0, "experience.$": 1 },
             { $set: { ...req.body } }
         );
+=======
+// - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
+// Get a specific experience
+// experienceRouter.put("/:expId", async (req, res) => {
+//     try {
+//         const experienceToEdit = await Profiles.findOne(
+//             { "experience._id": req.params.expId },
+//             { _id: 0, "experience.$": 1 },
+//             { $set: { ...req.body } }
+//         );
+>>>>>>> edeb82b25705f72f670893f3c4e0ec9de851d2d1
 // experienceRouter.put("/user/:username/:expId", async (req, res) => {
 //     try {
         // const experienceToEdit = await Profiles.findOne(
@@ -131,6 +136,7 @@ experienceRouter.put("/:expId", async (req, res) => {
         //     { $set: { ...req.body } }
         // ).lean();
 
+<<<<<<< HEAD
         if (experienceToEdit)
             res.send({ Message: "Update", experience: req.body });
         res.status(404).send("Not found");
@@ -138,6 +144,15 @@ experienceRouter.put("/:expId", async (req, res) => {
         res.status(404).send(err);
     }
 });
+=======
+//         if (experienceToEdit)
+//             res.send({ Message: "Update", experience: req.body });
+//         res.status(404).send("Not found");
+//     } catch (err) {
+//         res.status(404).send(err);
+//     }
+// });
+>>>>>>> edeb82b25705f72f670893f3c4e0ec9de851d2d1
 
 
 
@@ -183,8 +198,13 @@ experienceRouter.delete("/:expId", async(req, res) => {
 //         res.send(experience);
 //     } catch (error) {
 //         res.status(404).send(error + "check your id");
+<<<<<<< HEAD
 //     }
 // });
+=======
+    }
+});
+>>>>>>> edeb82b25705f72f670893f3c4e0ec9de851d2d1
 
 // - POST https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId/picture
 // Change the experience picture
