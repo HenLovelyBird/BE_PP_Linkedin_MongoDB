@@ -14,7 +14,6 @@ const listEndpoints = require("express-list-endpoints");
 // Logger API calls in console
 const morgan = require("morgan");
 
-const path = require("path")
 const db = require("./src/db/dbConnect")
 const routes = require("./src/routes/index.routes")
 
