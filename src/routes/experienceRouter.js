@@ -1,16 +1,9 @@
 const express = require("express");
-// const fs = require("fs-extra")
 const { check } = require("express-validator");
-// const multer = require("multer")
-// const multerConfig = multer()
 const Profiles = require("../models/profileSchema");
 
 const experienceRouter = express.Router();
 
-// POST, PUT, DELETE :expId
-// experiences/:username
-// how to post experiences into a particular profile username/id?
-// .push(...req.body)
 
 // - GET https://striveschool.herokuapp.com/api/profile/userName/experiences
 // Get user experiences
@@ -105,60 +98,39 @@ experienceRouter.post("/user/:username/", async (req, res) => {
 });
 
 
-<<<<<<< HEAD
-=======
-/**
- * const newProject = req.body;
- const addProfileExperience = await Profiles.findOneAndUpdate({req.params.username},
-      {
-        $push: { experience: req.body}
-      }
-    );
- */
-
-
-
-
->>>>>>> 335a714711dfb407c5f5408eec0b97049445d623
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-<<<<<<< HEAD
-experienceRouter.put("/:expId", async (req, res) => {
-    try {
-        const experienceToEdit = await Profiles.findOne(
-            { "experience._id": req.params.expId },
-            { _id: 0, "experience.$": 1 },
-            { $set: { ...req.body } }
-        );
-=======
-experienceRouter.put("/user/:username/:expId", async (req, res) => {
-    try {
+// experienceRouter.put("/:expId", async (req, res) => {
+//     try {
+//         const experienceToEdit = await Profiles.findOne(
+//             { "experience._id": req.params.expId },
+//             { _id: 0, "experience.$": 1 },
+//             { $set: { ...req.body } }
+//         );
+// experienceRouter.put("/user/:username/:expId", async (req, res) => {
+//     try {
         // const experienceToEdit = await Profiles.findOne(
         //     { "experience._id": req.params.expId },
         //     { _id: 0, "experience.$": 1 },
         //     { $set: { ...req.body } }
         // );
 
-        const experienceToEdit = await Profiles.findOneAndUpdate(
-            {
-                username: req.params.username,
-            },
-            { "experience.$": 1, username: 1, _id: 0 },
-            { $set: { ...req.body } }
-        ).lean();
+        // const experienceToEdit = await Profiles.findOneAndUpdate(
+        //     {
+        //         username: req.params.username,
+        //     },
+        //     { "experience.$": 1, username: 1, _id: 0 },
+        //     { $set: { ...req.body } }
+        // ).lean();
 
->>>>>>> 1dd488c06d56dedc7f4840695acaa26942839416
-        if (experienceToEdit)
-            res.send({ Message: "Update", experience: req.body });
-        res.status(404).send("Not found");
-    } catch (err) {
-        res.status(404).send(err);
-    }
-});
-<<<<<<< HEAD
+//         if (experienceToEdit)
+//             res.send({ Message: "Update", experience: req.body });
+//         res.status(404).send("Not found");
+//     } catch (err) {
+//         res.status(404).send(err);
+//     }
+// });
 
-=======
->>>>>>> 1dd488c06d56dedc7f4840695acaa26942839416
 
 
 /**
@@ -189,7 +161,6 @@ experienceRouter.put("/user/:username/:expId", async (req, res) => {
 
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-<<<<<<< HEAD
 experienceRouter.delete("/:expId", async(req, res) => {
     try {
         const experienceToDelete = Profiles.findByIdAndDelete(req.params.expId)
@@ -198,14 +169,12 @@ experienceRouter.delete("/:expId", async(req, res) => {
         res.send({Message: "Deleted"})
     } catch (error) {
         res.status(404).send(error)
-=======
-experienceRouter.delete("username/:expId", async (req, res) => {
-    try {
-        const experience = Profiles.findByIdAndDelete(req.params.expId);
-        res.send(experience);
-    } catch (error) {
-        res.status(404).send(error + "check your id");
->>>>>>> 1dd488c06d56dedc7f4840695acaa26942839416
+// experienceRouter.delete("username/:expId", async (req, res) => {
+//     try {
+//         const experience = Profiles.findByIdAndDelete(req.params.expId);
+//         res.send(experience);
+//     } catch (error) {
+//         res.status(404).send(error + "check your id");
     }
 });
 

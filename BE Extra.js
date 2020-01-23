@@ -2,7 +2,8 @@
 
     LinkedIn Backend - Extras
 
-    This routes are NOT mandatory. Please consider finishing both backend and frontend before moving to this tasks.
+    These routes are NOT mandatory. Please consider finishing both backend and frontend before moving to 
+    this tasks.
     Frontend-wise, try to create a great user experience, as close as possible at the LinkedIn original one.
 
     ---------------------------------------------------------------------------
