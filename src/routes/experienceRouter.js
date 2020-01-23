@@ -4,79 +4,77 @@ const { check } = require("express-validator");
 // const multer = require("multer")
 // const multerConfig = multer()
 const Profiles = require("../models/profileSchema");
+const { ObjectID } = require("mongodb");
 
 const experienceRouter = express.Router();
 
-// POST, PUT, DELETE :expId
-// experiences/:username
-// how to post experiences into a particular profile username/id?
-// .push(...req.body)
-
-// - GET https://striveschool.herokuapp.com/api/profile/userName/experiences
-// Get user experiences
-// experienceRouter.get("/:username", async(req, res) => {
-//      const experiences = await Profiles.findOne({"username": req.params.username});
-//      res.send(experiences)
-// });
-
-// experienceRouter.get("/:user/experiences", async (req, res) => {
-//     try {
-//         const profile = await Profiles.findOne({ username: req.params.user });
-//         if (profile) {
-//             res.send(profile);
-//         } else {
-//             res.status(404).send("Cannot find the profile with the id");
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).send(error);
-//     }
-// });
-
+// GET One Profile and all its experiences
 experienceRouter.get("/:username", async (req, res) => {
-    console.log(req.params.username);
-
     try {
-        const numberOfExperiences = await Profiles.aggregate([
+        const profileWithExperiences = await Profiles.aggregate([
             { $match: { username: req.params.username } },
-            { $unwind: "$experience" },
-            { $project: { count: { $add: 1 } } },
-            { $group: { _id: null, number: { $sum: "$count" } } }
+            {
+                $addFields: {
+                    experiences_count: {
+                        $size: "$experience"
+                    }
+                }
+            },
+            {
+                $project: {
+                    experiences_count: 1,
+                    username: 1,
+                    experience: 1,
+                    _id: 0
+                }
+            }
         ]);
-        const experiences = await Profiles.findOne({
-            username: req.params.username
-        });
 
-        if (numberOfExperiences) {
-            if (experiences) res.send({ numberOfExperiences, experiences });
+        if (profileWithExperiences.length > 0) {
+            res.send({ profileExperiences: profileWithExperiences });
+            //you can also return like this
+            //res.send({ profileExperiences: profileWithExperiences[0] });
+        } else {
+            res.status(400).send("No profile found for username");
         }
     } catch (err) {
+        console.log(err);
         res.status(500).send(err);
     }
 });
 
-// - GET https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
-// Get a specific experience
-// experienceRouter.get("/:expId", async(req, res) => {
-//     const experience = await Experience.findById(req.params.expId);
-//     if (experience) {
-//         res.send(experience)
-//     } else {
-//         res.send("Check your Id and try again")
-//     }
-// })
+// GET a Profile and One experience
+experienceRouter.get("/:username/experience/:expId", async (req, res) => {
+    try {
+        const profileWithExperience = await Profiles.aggregate([
+            { $match: { username: req.params.username } },
+            {
+                $unwind: "$experience"
+            },
 
-// - POST https://striveschool.herokuapp.com/api/profile/userName/experiences
-// Create an experience.
-// experienceRouter.post("/", async(req, res) => {
-//     try{
-//         const newExperience = await Experience.create(req.body)
-//         newExperience.save()
-//         res.send(newExperience)
-//     } catch(err) {
-//         res.status(500).send(err)
-//     }
-// })
+            {
+                $match: { "experience._id": new ObjectID(req.params.expId) }
+            },
+
+            {
+                $project: {
+                    username: 1,
+                    experience: 1,
+                    _id: 0
+                }
+            }
+        ]);
+
+        if (profileWithExperience.length > 0) {
+            res.send({ profileExperience: profileWithExperience });
+        } else {
+            res.status(404).send("No profile found for username");
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+});
 
 // POST
 experienceRouter.post("/user/:username/", async (req, res) => {
@@ -88,11 +86,12 @@ experienceRouter.post("/user/:username/", async (req, res) => {
                 $push: { experience: newExperience }
             }
         );
-        console.log(addProfileExperience);
-        res.send(addProfileExperience);
+
+        if (addProfileExperience) res.status(200).send(addProfileExperience);
+
+        res.status(400).send({ Message: "failed to POST" });
     } catch (error) {
         res.status(500).send(error);
-        console.log(error);
     }
 });
 
