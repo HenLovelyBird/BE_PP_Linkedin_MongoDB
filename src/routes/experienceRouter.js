@@ -100,42 +100,45 @@ experienceRouter.post("/:username/newExperience", async (req, res) => {
 });
 
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
-// Get a specific experience
-experienceRouter.put("/:username/experience/:expId", async (req, res) => {
+experienceRouter.put("/:username/:expId", async (req, res) => {
     try {
-        // const experienceToEdit = await Profiles.findOne(
-        //     { "experience._id": req.params.expId },
-        //     { _id: 0, "experience.$": 1 },
-        //     { $set: { ...req.body } }
-        // );
-
-        const experienceToEdit = await Profiles.findOneAndUpdate(
+        const updateData = req.body;
+        const set = {};
+        for (const field in updateData) {
+            set["experience.$." + field] = updateData[field];
+        }
+        const experienceToEdit = await Profiles.updateOne(
             {
-                username: req.params.username
+                username: req.params.username,
+                "experience._id": req.params.expId
             },
-            {
-                $match: { experience: new ObjectID(req.params.expId) }
-            },
-            { "experience.$": 1, username: 1, _id: 0 },
-            { $set: { ...req.body } }
-        ).lean();
+            { $set: set }
+        );
 
         if (experienceToEdit)
-            res.send({ Message: "Update", experience: req.body });
-        res.status(404).send("Not found");
+            res.send({ Message: "Updated", experience: req.body });
+
+        res.status(404).send({message: "Not found any to update"});
     } catch (err) {
         res.status(404).send(err);
     }
 });
 
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
-// Get a specific experience
-experienceRouter.delete("/username/:expId", async (req, res) => {
+experienceRouter.delete("/:username/:expId", async (req, res) => {
     try {
-        const experience = Profiles.findByIdAndDelete(req.params.expId);
-        res.send(experience);
+        await Profiles.findOneAndUpdate(
+            { username: req.params.username },
+            { $pull: { experience: { _id: req.params.expId } } },
+            err => {
+                if (err) {
+                    response.json(err);
+                }
+                res.send({ Message: "Deleted" });
+            }
+        );
     } catch (error) {
-        res.status(404).send(error + "check your id");
+        res.status(500).send(error);
     }
 });
 
