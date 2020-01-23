@@ -102,6 +102,11 @@
     - GET https://striveschool.herokuapp.com/api/profile/userName/experiences/CSV
     Download the experiences as a CSV
 
+    POST, PUT, DELETE :expId
+    experiences/:username
+    how to post experiences into a particular profile username/id?
+    .push(...req.body)
+
     ---------------------------------------------------------------------------
      
     POSTS:
