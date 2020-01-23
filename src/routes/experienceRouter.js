@@ -35,16 +35,22 @@ const experienceRouter = express.Router();
 
 experienceRouter.get("/:username", async (req, res) => {
     console.log(req.params.username);
+
     try {
-        const experiences = await Profiles.findOne(
-            { username: req.params.username },
-            { experience: 1, username: 1, _id: 0 }
-        ).lean();
+        const numberOfExperiences = await Profiles.aggregate([
+            { $match: { username: req.params.username } },
+            { $unwind: "$experience" },
+            { $project: { count: { $add: 1 } } },
+            { $group: { _id: null, number: { $sum: "$count" } } }
+        ]);
+        const experiences = await Profiles.findOne({
+            username: req.params.username
+        });
 
-        if (experiences) res.send(experiences);
-
-        res.status(404).send({ Message: "Not found any experience" });
-    } catch (error) {
+        if (numberOfExperiences) {
+            if (experiences) res.send({ numberOfExperiences, experiences });
+        }
+    } catch (err) {
         res.status(500).send(err);
     }
 });
@@ -102,7 +108,7 @@ experienceRouter.put("/user/:username/:expId", async (req, res) => {
 
         const experienceToEdit = await Profiles.findOneAndUpdate(
             {
-                username: req.params.username,
+                username: req.params.username
             },
             { "experience.$": 1, username: 1, _id: 0 },
             { $set: { ...req.body } }
