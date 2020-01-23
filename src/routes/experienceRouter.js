@@ -77,7 +77,7 @@ experienceRouter.get("/:username/experience/:expId", async (req, res) => {
 });
 
 // POST
-experienceRouter.post("/user/:username/", async (req, res) => {
+experienceRouter.post("/:username/newExperience", async (req, res) => {
     try {
         const newExperience = req.body;
         const addProfileExperience = await Profiles.findOneAndUpdate(
@@ -87,7 +87,11 @@ experienceRouter.post("/user/:username/", async (req, res) => {
             }
         );
 
-        if (addProfileExperience) res.status(200).send(addProfileExperience);
+        if (addProfileExperience)
+            res.status(200).send({
+                userName: req.params.username,
+                newExperienceAdded: newExperience
+            });
 
         res.status(400).send({ Message: "failed to POST" });
     } catch (error) {
@@ -97,7 +101,7 @@ experienceRouter.post("/user/:username/", async (req, res) => {
 
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.put("/user/:username/:expId", async (req, res) => {
+experienceRouter.put("/:username/experience/:expId", async (req, res) => {
     try {
         // const experienceToEdit = await Profiles.findOne(
         //     { "experience._id": req.params.expId },
@@ -108,6 +112,9 @@ experienceRouter.put("/user/:username/:expId", async (req, res) => {
         const experienceToEdit = await Profiles.findOneAndUpdate(
             {
                 username: req.params.username
+            },
+            {
+                $match: { experience: new ObjectID(req.params.expId) }
             },
             { "experience.$": 1, username: 1, _id: 0 },
             { $set: { ...req.body } }
@@ -123,7 +130,7 @@ experienceRouter.put("/user/:username/:expId", async (req, res) => {
 
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
-experienceRouter.delete("username/:expId", async (req, res) => {
+experienceRouter.delete("/username/:expId", async (req, res) => {
     try {
         const experience = Profiles.findByIdAndDelete(req.params.expId);
         res.send(experience);
