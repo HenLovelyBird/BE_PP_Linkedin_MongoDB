@@ -16,6 +16,13 @@ experienceRouter.get("/", async(req, res) => {
      res.send(experiences)  
 });
 
+experienceRouter.get("/profile/:userName", async(req,res) => {   
+     try{     
+          const experience = await Experience.find({username: req.params.userName})
+          console.log(experience)
+            res.status(200).send(experience)
+    } catch(err){       res.send(err)    }}) 
+
 // - GET https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
 // Get a specific experience
 experienceRouter.get("/:expId", async(req, res) => {

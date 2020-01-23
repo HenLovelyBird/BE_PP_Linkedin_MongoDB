@@ -24,12 +24,12 @@ profileRouter.get("/", async (req, res) => {
         delete query.limit;
         delete query.skip;
         delete query.sort;
-        const students = await Profiles.find(query)
+        const profiles = await Profiles.find(query)
             .sort({ [sort]: 1 })
             .limit(parseInt(limit))
             .skip(parseInt(skip));
 
-        res.send({ Total: profilesCount, students });
+        res.send({ Total: profilesCount, profile });
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
