@@ -2,7 +2,16 @@
 
 const mongoose = require("mongoose");
 
-const schema = ({
+
+const reactionSchema = new mongoose.Schema({
+    likedBy:  {
+          type: String,
+          unique:true
+      }
+  });
+
+  
+const schema = ({ 
     text: {
         type: String,
         required: true,
@@ -30,7 +39,8 @@ const schema = ({
         type: Date,
         default: Date.now,
         required: false
-    }
+    },
+    reactions:[reactionSchema]
 });
 
 

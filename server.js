@@ -21,6 +21,7 @@ const routes = require("./src/routes/index.routes")
 const profileRoute = require("./src/routes/profileRouter")
 const experienceRoute = require("./src/routes/experienceRouter")
 const postRoute = require("./src/routes/postRouter")
+const likesRoute = require("./src/routes/likesRouter")
 
 
 const port = config.server.port || 7001;
@@ -38,7 +39,7 @@ server.use(routes);
 server.use("/experiences", experienceRoute)
 server.use("/profiles", profileRoute)
 server.use("/posts", postRoute)
-
+server.use("/likes", likesRoute)
 
 server.get("/", async (req, res) => {
     res.send("server is working");
