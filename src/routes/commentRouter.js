@@ -49,7 +49,7 @@ commentRouter.post("/:postId", async (req, res) => {
                         }
                     );
                 } else {
-                    res.send({ Message: "Username not exist" });
+                    res.send({ Message: "Username not exist", err });
                 }
             }
         );
