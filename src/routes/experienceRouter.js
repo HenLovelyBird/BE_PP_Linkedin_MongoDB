@@ -8,7 +8,9 @@ const multerConfig = multer({});
 const path = require("path");
 const fs = require("fs-extra");
 
+
 const experienceRouter = express.Router();
+
 
 // GET One Profile and all its experiences
 experienceRouter.get("/:username", async (req, res) => {
@@ -78,6 +80,8 @@ experienceRouter.get("/:username/experience/:expId", async (req, res) => {
     }
 });
 
+
+
 // POST
 experienceRouter.post("/:username/newExperience", async (req, res) => {
     try {
@@ -100,7 +104,10 @@ experienceRouter.post("/:username/newExperience", async (req, res) => {
     }
 });
 
+
+
 // - PUT https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
+
 experienceRouter.put("/:username/:expId", async (req, res) => {
     try {
         const updateData = req.body;
@@ -126,7 +133,11 @@ experienceRouter.put("/:username/:expId", async (req, res) => {
     }
 });
 
+
+
+
 // - DELETE https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId
+
 experienceRouter.delete("/:username/:expId", async (req, res) => {
     try {
         await Profiles.findOneAndUpdate(
