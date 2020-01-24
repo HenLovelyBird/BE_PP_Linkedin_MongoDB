@@ -135,21 +135,3 @@ postRouter.delete("/:id", async (req, res) => {
 });
 
 module.exports = postRouter;
-
-/**
- - GET https://striveschool.herokuapp.com/api/posts/
-    Retrieve posts
-    - POST https://striveschool.herokuapp.com/api/posts/
-    Creates a new post
-    - GET https://striveschool.herokuapp.com/api/posts/{postId}
-    Retrieves the specified post
-    - PUT https://striveschool.herokuapp.com/api/posts/{postId}
-    Edit a given post
-    - DELETE https://striveschool.herokuapp.com/api/posts/{postId}
-    Removes a post
-    - POST https://striveschool.herokuapp.com/api/posts/{postId}
-    Add an image to the post under the name of "post"
-​
-    #EXTRA: Find a way to return also the user with the posts, in order to have the Name / Picture to show it correcly on the frontend
-​
- */

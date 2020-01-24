@@ -1,5 +1,3 @@
-
-
 const mongoose = require("mongoose");
 
 const schema = ({
@@ -30,7 +28,13 @@ const schema = ({
         type: Date,
         default: Date.now,
         required: false
-    }
+    },
+
+    comment: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+        required: false
+    },
 });
 
 
