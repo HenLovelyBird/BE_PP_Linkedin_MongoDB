@@ -1,8 +1,5 @@
 const express = require("express");
-// const fs = require("fs-extra")
 const { check } = require("express-validator");
-// const multer = require("multer")
-// const multerConfig = multer()
 const Profiles = require("../models/profileSchema");
 const { ObjectID } = require("mongodb");
 
