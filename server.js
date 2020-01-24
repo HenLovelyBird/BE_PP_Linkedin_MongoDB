@@ -22,7 +22,11 @@ const routes = require("./src/routes/index.routes")
 const profileRoute = require("./src/routes/profileRouter")
 const experienceRoute = require("./src/routes/experienceRouter")
 const postRoute = require("./src/routes/postRouter")
+
+const likesRoute = require("./src/routes/likesRouter")
+
 const commentRoute = require("./src/routes/commentRouter")
+
 
 
 
@@ -40,7 +44,11 @@ server.use(routes);
 server.use("/experiences", experienceRoute)
 server.use("/profiles", profileRoute)
 server.use("/posts", postRoute)
+
+server.use("/likes", likesRoute)
+
 server.use("/comments", commentRoute)
+
 
 
 server.get("/", async (req, res) => {
