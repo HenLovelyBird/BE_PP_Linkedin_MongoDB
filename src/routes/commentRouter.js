@@ -14,8 +14,8 @@ commentRouter.get("/:postId", async (req, res) => {
                     res.send(err);
                 } else {
                     res.status(200).send({
-                        comments: comments,
-                        total_comments: comments.length
+                        total_comments: comments.length,
+                        comments: comments
                     });
                 }
             }
