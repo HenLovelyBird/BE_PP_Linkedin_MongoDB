@@ -6,6 +6,11 @@ const { check } = require("express-validator");
 const Profiles = require("../models/profileSchema");
 const { ObjectID } = require("mongodb");
 
+const multer = require("multer");
+const multerConfig = multer({});
+const path = require("path");
+const fs = require("fs-extra");
+
 const experienceRouter = express.Router();
 
 // GET One Profile and all its experiences
@@ -104,6 +109,7 @@ experienceRouter.put("/:username/:expId", async (req, res) => {
     try {
         const updateData = req.body;
         const set = {};
+
         for (const field in updateData) {
             set["experience.$." + field] = updateData[field];
         }
@@ -118,9 +124,9 @@ experienceRouter.put("/:username/:expId", async (req, res) => {
         if (experienceToEdit)
             res.send({ Message: "Updated", experience: req.body });
 
-        res.status(404).send({message: "Not found any to update"});
+        res.status(404).send({ message: "Not found any to update" });
     } catch (err) {
-        res.status(404).send(err);
+        res.status(500).send(err);
     }
 });
 
@@ -142,25 +148,42 @@ experienceRouter.delete("/:username/:expId", async (req, res) => {
     }
 });
 
-// - POST https://striveschool.herokuapp.com/api/profile/userName/experiences/:expId/picture
-// Change the experience picture
-// experienceRouter.post("/:expId/img",
-//     [check("img")
-//     .isURL()
-//     .withMessage("only URL images are permitted")],
-//     async(req, res) => {
-//         const errors = validationResult(req);
-//         if(!errors.isEmpty()) {
-//             return res.status(422).json({ errors: errors.array() })
-//         }
-//         const { img } = req.body;
+experienceRouter.post(
+    "/:username/:experience/imgUpload",
+    multerConfig.single("experienceImg"),
+    async (req, res) => {
+        try {
+            const fileName =
+                req.params.username + path.extname(req.file.originalname);
 
-// })
+            const newImageLocation = path.join(
+                __dirname,
+                "../../images",
+                fileName
+            );
+            await fs.writeFile(newImageLocation, req.file.buffer);
 
-// - POST https://striveschool.herokuapp.com/api/profile/userName/experiences/CSV
-// Download the experiences as a CSV
-// experienceRouter.post("/:csv", async(req, res) => {
+            req.body.imageUrl =
+                req.protocol + "://" + req.get("host") + "/images/" + fileName;
 
-// })
+            const newExperienceUrl = await Profiles.findOneAndUpdate(
+                {
+                    username: req.params.username,
+                    "experience._id": req.params.expId
+                },
+                { $set: { image: req.body.imageUrl } }
+            );
+
+            if (newExperienceUrl) {
+                newExperienceUrl.save();
+                res.status(200).send({ message: "Image URL updated" });
+            }
+
+            res.status(400).send({ message: "Not uploaded" });
+        } catch (ex) {
+            res.status(500).send(ex);
+        }
+    }
+);
 
 module.exports = experienceRouter;
