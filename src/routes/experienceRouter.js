@@ -88,18 +88,17 @@ experienceRouter.post("/:username/newExperience", async (req, res) => {
         const newExperience = req.body;
         const addProfileExperience = await Profiles.findOneAndUpdate(
             { username: req.params.username },
-            {
-                $push: { experience: newExperience }
-            }
+            { $push: { experience: newExperience } }
         );
 
-        if (addProfileExperience)
+        if (addProfileExperience) {
             res.status(200).send({
                 userName: req.params.username,
                 newExperienceAdded: newExperience
             });
-
-        res.status(400).send({ Message: "failed to POST" });
+        } else {
+            res.status(400).send({ Message: "failed to POST" });
+        }
     } catch (error) {
         res.status(500).send(error);
     }
@@ -156,9 +155,10 @@ experienceRouter.delete("/:username/:expId", async (req, res) => {
     }
 });
 
+//Image Post Upload
 experienceRouter.post(
     "/:username/:experience/imgUpload",
-    multerConfig.single("experienceImg"),
+    multerConfig.single("imageUrl"),
     async (req, res) => {
         try {
             const fileName =
@@ -177,17 +177,15 @@ experienceRouter.post(
             const newExperienceUrl = await Profiles.findOneAndUpdate(
                 {
                     username: req.params.username,
-                    "experience._id": req.params.expId
+                    "experience._id": req.params.experience
                 },
-                { $set: { image: req.body.imageUrl } }
+                { $set: { "experience.$.image": req.body.imageUrl } }
             );
-
             if (newExperienceUrl) {
-                newExperienceUrl.save();
                 res.status(200).send({ message: "Image URL updated" });
+            } else {
+                res.status(400).send({ message: "Not uploaded" });
             }
-
-            res.status(400).send({ message: "Not uploaded" });
         } catch (ex) {
             res.status(500).send(ex);
         }

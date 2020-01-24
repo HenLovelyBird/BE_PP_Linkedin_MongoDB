@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 
 const schema = {
-    text: {
+    comment: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
 
     username: {
@@ -13,11 +12,12 @@ const schema = {
         required: true
     },
 
-    image: {
-        type: String,
-        default: "https://via.placeholder.com/150",
+    post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
         required: false
     },
+
     createdAt: {
         type: Date,
         default: Date.now,
@@ -28,17 +28,11 @@ const schema = {
         type: Date,
         default: Date.now,
         required: false
-    },
-
-    comment: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Comment",
-        required: false
     }
 };
 
-const collectionName = "posts";
-const postSchema = mongoose.Schema(schema);
-const Post = mongoose.model(collectionName, postSchema);
+const collectionName = "comments";
+const commentSchema = mongoose.Schema(schema);
+const Comment = mongoose.model(collectionName, commentSchema);
 
-module.exports = Post;
+module.exports = Comment;
