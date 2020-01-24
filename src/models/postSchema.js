@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const schema = ({
+const schema = {
     text: {
         type: String,
         required: true,
@@ -34,10 +34,8 @@ const schema = ({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",
         required: false
-    },
-});
-
-
+    }
+};
 
 const collectionName = "posts";
 const postSchema = mongoose.Schema(schema);

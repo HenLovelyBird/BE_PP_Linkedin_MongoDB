@@ -3,16 +3,19 @@ const mongoose = require("mongoose");
 const schema = {
     comment: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
 
     username: {
-        username: {
-            type: mongoose.Schema.Types.String,
-            ref: "Profile",
-            required: true
-        }
+        type: mongoose.Schema.Types.String,
+        ref: "Profile",
+        required: true
+    },
+
+    post: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+        required: false
     },
 
     createdAt: {
