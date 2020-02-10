@@ -93,7 +93,7 @@ const profileSchema = new mongoose.Schema({
     imageUrl: {
         type: String,
         required: false,
-        default: "https://via.placeholder.com/150"
+        default: "https://picsum.photos/200"
     },
 
     username: {
