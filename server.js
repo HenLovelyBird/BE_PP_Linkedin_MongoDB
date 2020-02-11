@@ -4,9 +4,9 @@
 // Routes, models or else not related is called by an index and no here
 // In this way we i prove scalability
 const config = require("./src/config/config");
-
 const express = require("express");
-// const mongoose= require("mongoose")
+const atob = require("atob")
+const authRouter = require('./src/routes/authRouter.js')
 const mongoose = require("./src/db/dbConnect");
 const cors = require("cors");
 const server = express();
@@ -40,7 +40,7 @@ server.use("/images", express.static(path.join(__dirname, "images")))
 server.use(morgan("dev"));
 
 server.use(routes);
-
+server.use("/auth", authRouter)
 server.use("/experiences", experienceRoute)
 server.use("/profiles", profileRoute)
 server.use("/posts", postRoute)
