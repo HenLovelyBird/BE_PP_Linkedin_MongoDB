@@ -6,10 +6,11 @@
 const config = require("./src/config/config");
 const express = require("express");
 // const atob = require("atob")
-const authRouter = require('./src/routes/authRouter.js')
+// const authRouter = require('./src/routes/authRouter.js')
 // const { basic, adminOnly, setUserInfo } = require("./src/utils/auth")
 const mongoose = require("./src/db/dbConnect");
 const passport = require("passport")
+const auth = require('./src/utils/auth')
 const cors = require("cors");
 const server = express();
 const listEndpoints = require("express-list-endpoints");
@@ -30,7 +31,7 @@ const commentRoute = require("./src/routes/commentRouter")
 server.use(express.json());
 server.use(express.static(path.join(__dirname, "./images")));
 server.use(cors());
-
+server.use(passport.initialize())
 server.use("/images", express.static(path.join(__dirname, "images")))
 
 server.use(morgan("dev"));
