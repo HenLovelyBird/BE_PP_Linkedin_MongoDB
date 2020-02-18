@@ -5,10 +5,14 @@ const passport = require("passport")
 
 const userRouter = express.Router()
 
-userRouter.get("/", passport.authenticate("local"), async (req, res) => {
+userRouter.get("/", async (req, res) => {
     console.log(req.user)
     res.send(await User.find())
-})
+});
+// userRouter.get("/", passport.authenticate("local"), async (req, res) => {
+//     console.log(req.user)
+//     res.send(await User.find())
+// })
 
 //this creates a user starting from username and password
 userRouter.post("/signup", async (req, res) => {
