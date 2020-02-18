@@ -7,6 +7,8 @@ const fs = require("fs-extra");
 const profileRouter = express.Router();
 const generatePDF = require("../pdfConfig/pdfCreator");
 const json2csv = require("json2csv").parse;
+const { getToken } = require("../utils/auth")
+const passport = require("passport")
 
 // As we have a controller folder for scalability the logic should be kept out of here
 // We call only the controller methods
@@ -179,6 +181,14 @@ profileRouter.post(
         }
     }
 );
+
+profileRouter.put("/:id", passport.authenticate("jwt"), async(req,res) => {
+    const token = getToken({ _id: req.user._id })
+    res.send({
+        access_token: token,
+        user: req.user
+    })
+})
 
 profileRouter.put("/:id", async (req, res) => {
     delete req.body._id;
