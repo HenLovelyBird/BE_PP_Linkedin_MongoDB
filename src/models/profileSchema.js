@@ -2,6 +2,8 @@
 // Embedded we have the Experience as []
 const mongoose = require("mongoose");
 const { isEmail } = require("validator");
+const passportLocalMongoose = require("passport-local-mongoose")
+
 
 const experienceSchema = new mongoose.Schema({
     role: {
@@ -47,20 +49,20 @@ const experienceSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: false,
-        default: "https://via.placeholder.com/150"
+        required: false
+        // default: "https://via.placeholder.com/150"
     }
 });
 
 const profileSchema = new mongoose.Schema({
     firstname: {
         type: String,
-        required: true
+        required: false
     },
 
     surname: {
         type: String,
-        required: true
+        required: false
     },
 
     email: {
@@ -68,7 +70,7 @@ const profileSchema = new mongoose.Schema({
         trim: true,
         lowercase: true,
         unique: true,
-        required: true,
+        required: false,
         validate: {
             validator: string => isEmail(string),
             message: "Provided email is invalid"
@@ -77,26 +79,33 @@ const profileSchema = new mongoose.Schema({
 
     bio: {
         type: String,
-        required: true
+        required: false
     },
 
-    title: {
+    role: {
         type: String,
-        required: true
+        required: true,
+        default: "user"
     },
 
     area: {
         type: String,
-        required: true
+        required: false
     },
 
-    imageUrl: {
+    image: {
         type: String,
-        required: false,
-        default: "https://picsum.photos/200"
+        required: false
+        // default: "https://picsum.photos/200"
     },
 
     username: {
+        type: String,
+        required: true,
+        unique: true
+    },
+
+    password: {
         type: String,
         required: true,
         unique: true
@@ -116,6 +125,8 @@ const profileSchema = new mongoose.Schema({
         required: false
     }
 });
+
+profileSchema.plugin(passportLocalMongoose)
 
 const collectionName = "profiles";
 const Profile = mongoose.model(collectionName, profileSchema);
