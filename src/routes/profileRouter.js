@@ -49,9 +49,9 @@ profileRouter.get("/", async (req, res) => {
 
 profileRouter.get("/:id", async (req, res) => {
     try {
-        const profile = await profile.findById(req.params.id);
-        if (profile) {
-            res.send(profile);
+        const profileid = await profile.findById(req.params.id);
+        if (profileid) {
+            res.send(profileid);
         } else {
             res.status(404).send("Cannot find the profile with the id");
         }

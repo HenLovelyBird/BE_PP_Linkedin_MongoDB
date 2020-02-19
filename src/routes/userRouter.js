@@ -2,8 +2,19 @@ const express = require("express")
 const User = require("../models/userSchema")
 const { getToken } = require("../utils/auth")
 const passport = require("passport")
+const multer = require("multer");
+const MulterAzureStorage = require("multer-azure-storage")
+
 
 const userRouter = express.Router()
+
+const upload = multer({
+    storage: new MulterAzureStorage({
+        azureStorageConnectionString: process.env.AZURE_STORAGE,
+        containerName: 'images',
+        containerSecurity: 'blob'
+    })
+})
 
 userRouter.get("/", async (req, res) => {
     console.log(req.user)
@@ -56,7 +67,26 @@ userRouter.post("/changepassword", passport.authenticate("local"), async(req, re
     user.save() // <= remember to save the object, since setPassword is not committing to the db
     console.log(result) 
     res.send(result) 
-}
-)
+})
+
+userRouter.post("/uploadPicture", 
+        passport.authenticate("jwt"), //check the token and set the user info into req.user
+        upload.single("image"), //save the picture and set the pic info into req.file
+        async (req, res) => {
+
+    if (req.user.image){ //if we have a previous image
+        const container = blobClient.getContainerClient("images"); //we take a reference to the container
+        const urlParts = req.user.image.split("/") // we select the name of the previous picture
+        const filename = urlParts.reverse()[0]
+        await container.deleteBlob(filename) // we delete the previous picture
+    }
+
+    //save into the database the url
+    await userModel.findByIdAndUpdate(req.user._id, {
+        image: req.file.url
+    })
+    //return the url
+    res.send(req.file.url)
+})
 
 module.exports = userRouter;
