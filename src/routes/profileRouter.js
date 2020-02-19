@@ -1,24 +1,33 @@
 const express = require("express");
 // const { Profile } = require("../controllers/index.controller");
-const Profiles = require("../models/profileSchema");
+const profile = require("../models/profileSchema");
+const userModel = require("../models/userSchema")
 const multer = require("multer");
+const MulterAzureStorage = require("multer-azure-storage")
 const path = require("path");
 const fs = require("fs-extra");
-const profileRouter = express.Router();
 const generatePDF = require("../pdfConfig/pdfCreator");
 const json2csv = require("json2csv").parse;
 const { getToken } = require("../utils/auth")
 const passport = require("passport")
 
-// As we have a controller folder for scalability the logic should be kept out of here
-// We call only the controller methods
+const profileRouter = express.Router();
 
-//  profileRouter.get("/", Profile.getAll);
-
-// profileRouter.post("/", Profile.create);
+const upload = multer({
+    storage: new MulterAzureStorage({
+        azureStorageConnectionString: process.env.AZURE_STORAGE,
+        containerName: 'images',
+        containerSecurity: 'blob'
+    })
+})
 
 profileRouter.get("/", async (req, res) => {
-    const profilesCount = await Profiles.countDocuments();
+    console.log(req.user)
+    res.send(await profile.find())
+});
+
+profileRouter.get("/", async (req, res) => {
+    const profileCount = await profile.countDocuments();
 
     try {
         const query = req.query;
@@ -26,12 +35,12 @@ profileRouter.get("/", async (req, res) => {
         delete query.limit;
         delete query.skip;
         delete query.sort;
-        const profileList = await Profiles.find(query)
+        const profileList = await profiles.find(query)
             .sort({ [sort]: 1 })
             .limit(parseInt(limit))
             .skip(parseInt(skip));
 
-        res.send({ Total: profilesCount, profileList });
+        res.send({ Total: profileCount, profileList });
     } catch (error) {
         console.log(error);
         res.status(500).send(error);
@@ -40,7 +49,7 @@ profileRouter.get("/", async (req, res) => {
 
 profileRouter.get("/:id", async (req, res) => {
     try {
-        const profile = await Profiles.findById(req.params.id);
+        const profile = await profile.findById(req.params.id);
         if (profile) {
             res.send(profile);
         } else {
@@ -55,7 +64,7 @@ profileRouter.get("/:id", async (req, res) => {
 profileRouter.get("/username/:username", async (req, res) => {
     try {
         let username = { username: req.params.username };
-        const profile = await Profiles.findOne(username);
+        const profile = await profile.findOne(username);
         if (profile) {
             res.send(profile);
         } else {
@@ -71,7 +80,7 @@ profileRouter.get("/username/:username", async (req, res) => {
 profileRouter.get("/:username/experiences", async (req, res) => {
     try {
         console.log(req.params.username);
-        const profile = await Profiles.findOne(
+        const profile = await profile.findOne(
             { username: req.params.username },
             { experience: 1, _id: 0 }
         );
@@ -85,7 +94,7 @@ profileRouter.get("/:username/experiences", async (req, res) => {
 //get one experience with ID
 profileRouter.get("/experiences/:expId/", async (req, res) => {
     try {
-        const experience = await Profiles.find(
+        const experience = await profile.find(
             { "experience._id": req.params.expId },
             { _id: 0, "experience.$": 1 }
         );
@@ -98,7 +107,7 @@ profileRouter.get("/experiences/:expId/", async (req, res) => {
 
 profileRouter.get("/pdf/:username/cv", async (req, res) => {
     try {
-        const profileToPDF = await Profiles.findOne({
+        const profileToPDF = await profile.findOne({
             username: req.params.username
         });
         if (!profileToPDF) {
@@ -123,7 +132,7 @@ profileRouter.get("/pdf/:username/cv", async (req, res) => {
 
 profileRouter.get("/get/CSV/:username/experiences", async (req, res) => {
     try {
-        const profile = await Profiles.findOne({
+        const profile = await profile.findOne({
             username: req.params.username
         });
         const fields = ["company", "role", "title"];
@@ -137,12 +146,28 @@ profileRouter.get("/get/CSV/:username/experiences", async (req, res) => {
     }
 });
 
+//this creates a user starting from username and password
+profileRouter.post("/signup", async (req, res) => {
+    try{
+        const user = await userModel.register(req.body, req.body.password)
+        const token = getToken({ _id: user._id })
+            res.send({
+                access_token: token,
+                user: user
+            })
+        }
+    catch(exx){
+        console.log(exx)
+        res.status(500).send(exx)
+    }
+})
+
 profileRouter.post("/", async (req, res) => {
     // let newInfo = {...req.body,
     //     createdAt: new Date()}
 
     try {
-        const newProfile = await Profiles.create(req.body);
+        const newProfile = await profile.create(req.body);
 
         newProfile.save();
         res.send(newProfile);
@@ -152,35 +177,58 @@ profileRouter.post("/", async (req, res) => {
     }
 });
 
-const multerConfig = multer({});
-profileRouter.post(
-    "/:username/picture",
-    multerConfig.single("profileImg"),
-    async (req, res) => {
-        try {
-            const fileName =
-                req.params.username + path.extname(req.file.originalname);
+// const multerConfig = multer({});
+// profileRouter.post(
+//     "/:username/picture",
+//     multerConfig.single("profileImg"),
+//     async (req, res) => {
+//         try {
+//             const fileName =
+//                 req.params.username + path.extname(req.file.originalname);
 
-            const newImageLocation = path.join(__dirname,"../../images",fileName);
-            await fs.writeFile(newImageLocation, req.file.buffer);
+//             const newImageLocation = path.join(__dirname,"../../images",fileName);
+//             await fs.writeFile(newImageLocation, req.file.buffer);
 
-            req.body.imageUrl = req.protocol + "://" + req.get("host") + "/images/" + fileName;
+//             req.body.imageUrl = req.protocol + "://" + req.get("host") + "/images/" + fileName;
 
-            const newProfileUrl = await Profiles.findOneAndUpdate(
-                { username: req.params.username },
-                {
-                    $set: { imageUrl: req.body.imageUrl }
-                }
-            );
+//             const newProfileUrl = await profile.findOneAndUpdate(
+//                 { username: req.params.username },
+//                 {
+//                     $set: { imageUrl: req.body.imageUrl }
+//                 }
+//             );
 
-            newProfileUrl.save();
-            res.send("Image URL updated");
-        } catch (ex) {
-            res.status(500).send(ex);
-            console.log(ex);
-        }
-    }
-);
+//             newProfileUrl.save();
+//             res.send("Image URL updated");
+//         } catch (ex) {
+//             res.status(500).send(ex);
+//             console.log(ex);
+//         }
+//     }
+// );
+
+// profileRouter.put("/:userId", passport.authenticate("jwt"), async (req, res) => {
+//     delete req.body.username,
+//     delete req.body._id,
+//     delete req.body.hash,
+//     delete req.body.salt
+
+//     if (req.user._id.toString() !== req.params.userId && req.user.role !== "glambot")
+//         return res.status(401).send("Unauthorized!")
+//     else {
+//         const update = await profile.findByIdAndUpdate({ _id: req.params.userId }, req.body)
+//         res.send(update)
+//     }
+// })
+
+//multer-azure-storage and muluter created this upload (see line 21)
+profileRouter.post("/profilePic", passport.authenticate("jwt"), upload.single("image"), async(req, res) => {
+    console.log(req.file)
+    await profile.findByIdAndUpdate(req.user._id, {
+        image: req.file
+    })
+    res.send(req.file)
+})
 
 profileRouter.put("/:id", passport.authenticate("jwt"), async(req,res) => {
     const token = getToken({ _id: req.user._id })
@@ -194,7 +242,7 @@ profileRouter.put("/:id", async (req, res) => {
     delete req.body._id;
 
     try {
-        const profileForEdit = await Profiles.findByIdAndUpdate(req.params.id, {
+        const profileForEdit = await profile.findByIdAndUpdate(req.params.id, {
             $set: {
                 ...req.body,
                 updatedAt: new Date()
@@ -216,7 +264,7 @@ profileRouter.put("/:id", async (req, res) => {
 
 profileRouter.delete("/:id", async (req, res) => {
     try {
-        const deletedProfile = await Profiles.findByIdAndDelete(req.params.id);
+        const deletedProfile = await profile.findByIdAndDelete(req.params.id);
 
         if (deletedProfile) res.status(200).send(" Successffully Deleted");
         else
@@ -235,7 +283,7 @@ profileRouter.post("/experience/:username", async (req, res) => {
 
     try {
         const newProject = req.body;
-        const addProfileExperience = await Profiles.findOneAndUpdate(
+        const addProfileExperience = await profile.findOneAndUpdate(
             { username: req.params.username },
             {
                 $push: { experience: newProject }
@@ -266,7 +314,7 @@ module.exports = profileRouter;
 
 // profileRouter.get("/user/experiences/:username/CSV", async(req,res)=>{
 //     try {
-//      const profile = await Profiles.findOne(
+//      const profile = await profile.findOne(
 //          { username: req.params.username },
 //          {  _id: 0,  experience: 1 }
 //      )

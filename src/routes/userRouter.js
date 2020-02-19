@@ -1,34 +1,5 @@
-const express = require("express")
-const User = require("../models/userSchema")
-const { getToken } = require("../utils/auth")
-const passport = require("passport")
 
-const userRouter = express.Router()
 
-userRouter.get("/", async (req, res) => {
-    console.log(req.user)
-    res.send(await User.find())
-});
-// userRouter.get("/", passport.authenticate("local"), async (req, res) => {
-//     console.log(req.user)
-//     res.send(await User.find())
-// })
-
-//this creates a user starting from username and password
-userRouter.post("/signup", async (req, res) => {
-    try{
-        const user = await User.register(req.body, req.body.password)
-        const token = getToken({ _id: user._id })
-            res.send({
-                access_token: token,
-                user: user
-            })
-        }
-    catch(exx){
-        console.log(exx)
-        res.status(500).send(exx)
-    }
-})
 
 //this will check the user credentials (username and password in the body) and generate a new token
 userRouter.post("/signin", passport.authenticate("local"), async(req, res)=>{
