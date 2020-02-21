@@ -21,10 +21,10 @@ const upload = multer({
     })
 })
 
-profileRouter.get("/", async (req, res) => {
-    console.log(req.user)
-    res.send(await profile.find())
-});
+// profileRouter.get("/", async (req, res) => {
+//     console.log(req.user)
+//     res.send(await profile.find())
+// });
 
 profileRouter.get("/", async (req, res) => {
     const profileCount = await profile.countDocuments();
@@ -163,9 +163,21 @@ profileRouter.get("/get/CSV/:username/experiences", async (req, res) => {
 // })
 
 profileRouter.post("/",
-    passport.authenticate('jwt'),
+    passport.authenticate('jwt',{ session: false }),
     async (req, res) => {
         console.log(req.user)
+        try{
+            const obj = {
+                ...req.body,
+                User: req.user._id,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            }
+            const profile = await Profile.create(obj)
+            res.send(profile);
+        } catch (err) {
+            res.status(500).send(err)
+        }
     })
 
     profileRouter.post("/uploadPicture", 
