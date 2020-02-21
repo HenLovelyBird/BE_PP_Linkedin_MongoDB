@@ -34,19 +34,9 @@ passport.use(new JwtStrategy
     })
 }))
 
-passport.use(new JwtStrategy
-    (jwtOptions, 
-            (jwtPayload, callback) =>{ //this strategy will be used when we ask passport to passport.authenticate("jwt")
-            Profile.findById(jwtPayload._id, (err, user) => { //looks into the collection
-            if (err) return callback(err, false) // ==> Something went wrong getting the info from the db
-            else if (user) return callback(null, user) // ==> Existing user, all right!
-            else return callback(null, false) // ==> Non existing user
-    })
-}))
-
 //-----------------JWT AREA-------------------------------------
 
 module.exports = {
-    getToken: (user) => jwt.sign(profile, user, jwtOptions.secretOrKey, { expiresIn: 1000 }) 
+    createToken: (user) => jwt.sign(user, jwtOptions.secretOrKey, { expiresIn: 1000 }) 
     //this is just a helper to have a central point for token generation
 }

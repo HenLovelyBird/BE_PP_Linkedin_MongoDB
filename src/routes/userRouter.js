@@ -5,7 +5,6 @@ const passport = require("passport")
 const multer = require("multer");
 
 
-
 const userRouter = express.Router()
 
 
@@ -62,24 +61,5 @@ userRouter.post("/changepassword", passport.authenticate("local"), async(req, re
     res.send(result) 
 })
 
-userRouter.post("/uploadPicture", 
-        passport.authenticate("jwt"), //check the token and set the user info into req.user
-        upload.single("image"), //save the picture and set the pic info into req.file
-        async (req, res) => {
-
-    if (req.user.image){ //if we have a previous image
-        const container = blobClient.getContainerClient("images"); //we take a reference to the container
-        const urlParts = req.user.image.split("/") // we select the name of the previous picture
-        const filename = urlParts.reverse()[0]
-        await container.deleteBlob(filename) // we delete the previous picture
-    }
-
-    //save into the database the url
-    await userModel.findByIdAndUpdate(req.user._id, {
-        image: req.file.url
-    })
-    //return the url
-    res.send(req.file.url)
-})
 
 module.exports = userRouter;

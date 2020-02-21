@@ -55,6 +55,12 @@ const experienceSchema = new mongoose.Schema({
 });
 
 const profileSchema = new mongoose.Schema({
+
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
+    },
+
     firstname: {
         type: String,
         required: false
@@ -97,18 +103,6 @@ const profileSchema = new mongoose.Schema({
         type: String,
         required: false
         // default: "https://picsum.photos/200"
-    },
-
-    username: {
-        type: String,
-        required: true,
-        unique: true
-    },
-
-    password: {
-        type: String,
-        required: true,
-        unique: true
     },
 
     experience: [experienceSchema],

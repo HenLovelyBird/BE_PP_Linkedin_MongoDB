@@ -15,7 +15,7 @@ const morgan = require("morgan");
 //Chat 
 const socketio = require("socket.io")
 const http = require("http")
-const Message = require("./src/models/msg")
+const msg = require("./src/models/msgSchema")
 const messageRouter = require("./src/routes/messageRouter")
 const { configureIO } = require("./src/utils/socket")
 
@@ -41,7 +41,7 @@ server.listen(port, () => {
 server.use(passport.initialize())
 
 //instance of socketio:
-const socketServer = http.createServer(app).listen(app.get("port")) //create the socketio server on the same port
+const socketServer = http.createServer(server).listen(server.get("port")) //create the socketio server on the same port
 const io = socketio(socketServer) //we are creating the element that will react to the messages
 io.set('transports', ["websocket"])
 configureIO(io);
@@ -52,7 +52,7 @@ server.use("/images", express.static(path.join(__dirname, "images")))
 server.use(morgan("dev"));
 
 server.use(routes);
-server.use("/auth", authRouter)
+
 server.use("/users", userRoute)
 server.use("/experiences", experienceRoute)
 server.use("/profiles", profileRoute)

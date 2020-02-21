@@ -147,35 +147,61 @@ profileRouter.get("/get/CSV/:username/experiences", async (req, res) => {
 });
 
 //this creates a user starting from username and password
-profileRouter.post("/signup", async (req, res) => {
-    try{
-        const user = await userModel.register(req.body, req.body.password)
-        const token = getToken({ _id: user._id })
-            res.send({
-                access_token: token,
-                user: user
-            })
-        }
-    catch(exx){
-        console.log(exx)
-        res.status(500).send(exx)
+// profileRouter.post("/signup", async (req, res) => {
+//     try{
+//         const user = await userModel.register(req.body, req.body.password)
+//         const token = getToken({ _id: user._id })
+//             res.send({
+//                 access_token: token,
+//                 user: user
+//             })
+//         }
+//     catch(exx){
+//         console.log(exx)
+//         res.status(500).send(exx)
+//     }
+// })
+
+profileRouter.post("/",
+    passport.authenticate('jwt'),
+    async (req, res) => {
+        console.log(req.user)
+    })
+
+    profileRouter.post("/uploadPicture", 
+        passport.authenticate("jwt"), //check the token and set the user info into req.user
+        upload.single("image"), //save the picture and set the pic info into req.file
+        async (req, res) => {
+
+    if (req.user.image){ //if we have a previous image
+        const container = blobClient.getContainerClient("images"); //we take a reference to the container
+        const urlParts = req.user.image.split("/") // we select the name of the previous picture
+        const filename = urlParts.reverse()[0]
+        await container.deleteBlob(filename) // we delete the previous picture
     }
+
+    //save into the database the url
+    await userModel.findByIdAndUpdate(req.user._id, {
+        image: req.file.url
+    })
+    //return the url
+    res.send(req.file.url)
 })
 
-profileRouter.post("/", async (req, res) => {
-    // let newInfo = {...req.body,
-    //     createdAt: new Date()}
+// profileRouter.post("/", async (req, res) => {
+//     // let newInfo = {...req.body,
+//     //     createdAt: new Date()}
 
-    try {
-        const newProfile = await profile.create(req.body);
+//     try {
+//         const newProfile = await profile.create(req.body);
 
-        newProfile.save();
-        res.send(newProfile);
-    } catch (error) {
-        res.status(500).send(error);
-        console.log(error);
-    }
-});
+//         newProfile.save();
+//         res.send(newProfile);
+//     } catch (error) {
+//         res.status(500).send(error);
+//         console.log(error);
+//     }
+// });
 
 // const multerConfig = multer({});
 // profileRouter.post(
