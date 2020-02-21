@@ -3,8 +3,8 @@ const { BlobServiceClient, StorageSharedKeyCredential } = require("@azure/storag
 const multer = require("multer")
 
 const fileRouter = express.Router()
-const credentials = new StorageSharedKeyCredential("debriefm8d8", process.env.AZURE_STORAGE_KEY)
-const blobClient = new BlobServiceClient("https://debriefm8d8.blob.core.windows.net/",  credentials)
+const credentials = new StorageSharedKeyCredential("blobImages", process.env.AZURE_STORAGE_KEY)
+const blobClient = new BlobServiceClient("https://linkedinmockupstorage.blob.core.windows.net/",  credentials)
 
 
 fileRouter.get("/", async (req, res)=>{
