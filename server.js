@@ -1,8 +1,3 @@
-// Server should contain only server initializations as it is an index
-// Less is modified is better
-// We put here all which need to be init with the server
-// Routes, models or else not related is called by an index and no here
-// In this way we i prove scalability
 const config = require("./src/config/config");
 const express = require("express");
 // const atob = require("atob")
@@ -17,6 +12,13 @@ const listEndpoints = require("express-list-endpoints");
 // Logger API calls in console
 const morgan = require("morgan");
 
+//Chat 
+const socketio = require("socket.io")
+const http = require("http")
+const Message = require("./src/models/msg")
+const messageRouter = require("./src/routes/messageRouter")
+const { configureIO } = require("./src/utils/socket")
+
 const path = require("path")
 const db = require("./src/db/dbConnect")
 const routes = require("./src/routes/index.routes")
@@ -29,18 +31,32 @@ const commentRoute = require("./src/routes/commentRouter")
 
 
 server.use(express.json());
-server.use(express.static(path.join(__dirname, "./images")));
 server.use(cors());
+const port = config.server.port || 7001;
+
+server.listen(port, () => {
+    console.log(`Your server is running on port ${port}`);
+});
+
 server.use(passport.initialize())
+
+//instance of socketio:
+const socketServer = http.createServer(app).listen(app.get("port")) //create the socketio server on the same port
+const io = socketio(socketServer) //we are creating the element that will react to the messages
+io.set('transports', ["websocket"])
+configureIO(io);
+
+server.use(express.static(path.join(__dirname, "./images")));
 server.use("/images", express.static(path.join(__dirname, "images")))
 
 server.use(morgan("dev"));
 
 server.use(routes);
-// server.use("/auth", authRouter)
+server.use("/auth", authRouter)
 server.use("/users", userRoute)
 server.use("/experiences", experienceRoute)
 server.use("/profiles", profileRoute)
+server.use("/chat", messageRouter)
 server.use("/posts", postRoute)
 server.use("/likes", likesRoute)
 server.use("/comments", commentRoute)
@@ -55,11 +71,4 @@ server.get("/", async (req, res) => {
 
 // })
 
-
 console.log(listEndpoints(server));
-
-const port = config.server.port || 7001;
-
-server.listen(port, () => {
-    console.log(`Your server is running on port ${port}`);
-});

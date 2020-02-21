@@ -1,20 +1,13 @@
 const express = require("express")
 const User = require("../models/userSchema")
-const { getToken } = require("../utils/auth")
+const { createToken } = require("../utils/auth")
 const passport = require("passport")
 const multer = require("multer");
-const MulterAzureStorage = require("multer-azure-storage")
+
 
 
 const userRouter = express.Router()
 
-const upload = multer({
-    storage: new MulterAzureStorage({
-        azureStorageConnectionString: process.env.AZURE_STORAGE,
-        containerName: 'images',
-        containerSecurity: 'blob'
-    })
-})
 
 userRouter.get("/", async (req, res) => {
     console.log(req.user)
@@ -26,7 +19,7 @@ userRouter.get("/", async (req, res) => {
 userRouter.post("/signup", async (req, res) => {
     try{
         const user = await User.register(req.body, req.body.password)
-        const token = getToken({ _id: user._id })
+        const token = createToken({ _id: user._id })
             res.send({
                 access_token: token,
                 user: user
@@ -40,7 +33,7 @@ userRouter.post("/signup", async (req, res) => {
 
 //this will check the user credentials (username and password in the body) and generate a new token
 userRouter.post("/signin", passport.authenticate("local"), async(req, res)=>{
-    const token = getToken({ _id: req.user._id, username: req.user.username })
+    const token = createToken({ _id: req.user._id, username: req.user.username })
     res.send({
         access_token: token,
         user: req.user.username
@@ -49,7 +42,7 @@ userRouter.post("/signin", passport.authenticate("local"), async(req, res)=>{
 
 //this will check the user credentials (access token) and generate a new token
 userRouter.post("/refresh", passport.authenticate("jwt"), async(req, res)=>{
-    const token = getToken({ _id: req.user._id })
+    const token = createToken({ _id: req.user._id })
     res.send({
         access_token: token,
         user: req.user
